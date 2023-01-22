@@ -1,2 +1,4 @@
 # ApiRequester
-API testing tool
+API testing tool.
+
+![main](img/main.png)

@@ -22,7 +22,7 @@ public class App extends Application
 //        root.getCo
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("ApiTest");
+        primaryStage.setTitle("ApiRequester");
 //        primaryStage.setUserData();
         primaryStage.show();
     }
