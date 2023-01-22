@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="413.0" prefWidth="818.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.newcodor.apirequester.UI.UIController">
+<children>
+<MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0">
+  <menus>
+    <Menu mnemonicParsing="false" text="Setting">
+      <items>
+        <MenuItem mnemonicParsing="false" onAction="#showProxyPanle" text="Proxy" />
+      </items>
+    </Menu>
+    <Menu mnemonicParsing="false" text="Help">
+      <items>
+        <MenuItem mnemonicParsing="false" text="About" />
+      </items>
+    </Menu>
+  </menus>
+</MenuBar>
+      <HBox prefHeight="300.0">
+         <children>
+      <AnchorPane maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="390.0">
+         <children>
+            <TextField fx:id="urlTextField" layoutX="2.0" layoutY="4.0" prefHeight="23.0" prefWidth="336.0" promptText="http://" />
+            <Button id="fetchBtn" fx:id="fetchReponseBtn" layoutX="287.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleFetchTask" text="fetch" />
+            <ComboBox fx:id="httpMethod" layoutX="6.0" layoutY="31.0" onDragEntered="#addAllowMethod" onZoomStarted="#addAllowMethod" prefHeight="23.0" prefWidth="89.0" promptText="GET" />
+                  <TabPane layoutX="6.0" layoutY="57.0" prefHeight="239.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE">
+                    <tabs>
+                      <Tab text="Content">
+                           <content>
+                               <fx:include source="content.fxml" />
+                           </content>
+                      </Tab>
+                      <Tab text="Headers">
+                           <content>
+                              <fx:include source="header.fxml" />
+                           </content>
+                      </Tab>
+                    </tabs>
+                  </TabPane>
+         </children>
+      </AnchorPane>
+      <TextArea fx:id="responseTextArea" prefWidth="420.0" style="-fx-background-color: #1d1626;">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </TextArea>
+         </children>
+      </HBox>
+<Label fx:id="requestStatus" text="Ready">
+         <VBox.margin>
+            <Insets left="8.0" />
+         </VBox.margin>
+      </Label>
+      <TableView prefHeight="200.0" prefWidth="200.0">
+        <columns>
+          <TableColumn editable="false" prefWidth="401.0" sortable="false" text="Request" />
+          <TableColumn editable="false" minWidth="0.0" prefWidth="145.0" text="Response" />
+            <TableColumn editable="false" minWidth="1.0" prefWidth="207.0" sortType="DESCENDING" text="Date" />
+        </columns>
+         <VBox.margin>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </VBox.margin>
+      </TableView>
+</children>
+</VBox>
