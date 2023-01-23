@@ -7,11 +7,12 @@ public class Formatter {
 
     public  static String  prettyJson(String originStr){
         try {
-            System.out.println("ok2");
             return new JSONObject(originStr).toString(4);
         } catch (JSONException e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
+//            throw new RuntimeException(e);
         }
+        return originStr;
     }
 
 }
