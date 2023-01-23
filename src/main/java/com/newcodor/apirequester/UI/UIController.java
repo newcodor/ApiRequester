@@ -3,6 +3,7 @@ package com.newcodor.apirequester.UI;
 import com.newcodor.apirequester.Utils.AsyncAction;
 import com.newcodor.apirequester.Utils.Cache;
 import com.newcodor.apirequester.Utils.HttpClient;
+import com.newcodor.apirequester.Utils.Formatter;
 import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import javafx.application.Platform;
@@ -81,7 +82,6 @@ public class UIController<T> {
             System.out.println(httpMethod.getValue());
             System.out.println("request.....");
             HttpRequest request = new HttpRequest(httpMethod.getValue().toString(),url, HeaderController.conventListToMap(HeaderController.headers),ContentController.instance.bodyContent.getText());
-            System.out.println("ok");
 //            HashMap params = new HashMap();
 //            params.put("text",String.class);
 //            testOperation();
@@ -113,14 +113,18 @@ public class UIController<T> {
                         }
                     }
                 }
-                responseText.append("\n");
+            responseText.append("\n");
 //                targetTextArea.appendText("\n");
+            if(response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").contains("application/json")){
+                responseText.append(Formatter.prettyJson(response.responseText));
+            }else{
                 responseText.append(response.responseText);
+            }
 //                targetTextArea.appendText(response.responseText);
 //                targetTextArea.setScrollTop(scrollTop);
 //                targetTextArea.positionCaret(caretPosition);
-                targetTextArea.setText(responseText.toString());
-                Platform.runLater(()->{
+            targetTextArea.setText(responseText.toString());
+            Platform.runLater(()->{
                     requestStatus.setText("Done");
                 });
         }catch (SocketTimeoutException | SSLException | SocketException e1  ){
