@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="ApiRequester:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/ApiRequester_jar</output-path>
+    <root id="archive" name="ApiRequester.jar">
+      <element id="module-output" name="ApiRequester" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../maven/repository/org/apache/sling/org.apache.sling.commons.json/2.0.20/org.apache.sling.commons.json-2.0.20.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/../../maven/repository/org/jetbrains/annotations/24.0.0/annotations-24.0.0.jar" path-in-jar="/" />
+      <element id="library" level="project" name="Maven: org.apache.sling:org.apache.sling.commons.json:2.0.20" />
+    </root>
+  </artifact>
+</component>
