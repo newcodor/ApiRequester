@@ -10,13 +10,18 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 
 import javax.net.ssl.SSLException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
 import java.util.ArrayList;
@@ -26,7 +31,6 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import  com.newcodor.apirequester.App;
 
 public class UIController<T> {
     @FXML
@@ -164,7 +168,8 @@ public class UIController<T> {
     }
 
     @FXML
-    public  void showAbout(){
+    public  void showAbout() throws IOException {
+        /*
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
         alert.setHeaderText(null);
@@ -178,6 +183,14 @@ public class UIController<T> {
         });
         alert.getDialogPane().setContent(projectLink);
         alert.showAndWait();
+         */
+        Stage stage = new Stage(); // Create a new stage
+        stage.setTitle("About"); // Set the stage title
+        // Set a scene with a button in the stage
+        Parent root = (Parent) FXMLLoader.load(this.getClass().getResource("/fxml/about.fxml"));
+        Scene scene = new Scene(root,400,250);
+        stage.setScene(scene);
+        stage.show();
     }
 //    @FXML
     public  void showProxyPanle(ActionEvent actionEvent){

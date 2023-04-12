@@ -27,7 +27,6 @@ public class App extends Application
     public void start(Stage primaryStage) throws Exception {
         this.mInstance = this;
         Parent root = (Parent) FXMLLoader.load(this.getClass().getResource("/fxml/gui.fxml"));
-//        root.getCo
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.setTitle("ApiRequester");

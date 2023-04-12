@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.geometry.*?>
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.newcodor.apirequester.UI.AboutController">
+   <children>
+      <ImageView fitHeight="75.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="/image/github.png" />
+         </image>
+         <VBox.margin>
+            <Insets left="160.0" top="70.0" />
+         </VBox.margin></ImageView>
+      <Hyperlink fx:id="projectLink" onAction="#openLinkOnBrowser" style="-fx-border-style: hidden;" text="https://github.com/newcodor/ApiRequester">
+         <VBox.margin>
+            <Insets left="70.0" top="10.0" />
+         </VBox.margin></Hyperlink>
+   </children>
+</VBox>
