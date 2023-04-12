@@ -1,5 +1,6 @@
 package com.newcodor.apirequester.UI;
 
+import com.newcodor.apirequester.Utils.Formatter;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -42,6 +43,14 @@ public class ContentController {
         contentTypeList.setValue("application/x-www-form-urlencoded");
     }
 
+    @FXML
+    public void makeJsonPretty(){
+        String contentText =  bodyContent.getText().trim();
+        if(contentText.startsWith("{")){
+            bodyContent.setText(Formatter.prettyJson(contentText));
+        }
+
+    }
     @FXML
     public  void base64EncodeContent(){
         int selectedContentLength = bodyContent.getSelection().getLength();

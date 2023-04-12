@@ -115,7 +115,7 @@ public class UIController<T> {
                 }
             responseText.append("\n");
 //                targetTextArea.appendText("\n");
-            if(response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").contains("application/json")){
+            if(response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
                 responseText.append(Formatter.prettyJson(response.responseText));
             }else{
                 responseText.append(response.responseText);
