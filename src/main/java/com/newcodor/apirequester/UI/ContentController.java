@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextArea;
+import java.util.Base64;
 
 public class ContentController {
 
@@ -57,10 +58,10 @@ public class ContentController {
         if(selectedContentLength==0){
             String fullContent = bodyContent.getText();
             if(!fullContent.isEmpty()){
-                bodyContent.setText(new sun.misc.BASE64Encoder().encode(fullContent.getBytes()));
+                bodyContent.setText(Base64.getEncoder().encodeToString(fullContent.getBytes()));
             }
         }else{
-            bodyContent.replaceSelection(new sun.misc.BASE64Encoder().encode(bodyContent.getSelectedText().getBytes()));
+            bodyContent.replaceSelection(Base64.getEncoder().encodeToString(bodyContent.getSelectedText().getBytes()));
         }
     }
 
