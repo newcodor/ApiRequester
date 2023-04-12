@@ -11,6 +11,13 @@ import javafx.stage.Stage;
  */
 public class App extends Application
 {
+
+    private static App mInstance;
+
+    public static App getInstance() {
+        return mInstance;
+    }
+
     public static void main( String[] args )
     {
         System.out.println( "[+] Start Project....." );
@@ -18,6 +25,7 @@ public class App extends Application
     }
 
     public void start(Stage primaryStage) throws Exception {
+        this.mInstance = this;
         Parent root = (Parent) FXMLLoader.load(this.getClass().getResource("/fxml/gui.fxml"));
 //        root.getCo
         Scene scene = new Scene(root);

@@ -8,6 +8,7 @@ import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
 import javafx.scene.control.*;
@@ -24,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+
+import  com.newcodor.apirequester.App;
 
 public class UIController<T> {
     @FXML
@@ -158,6 +161,23 @@ public class UIController<T> {
     public void  getProxyStatus(){
 
 
+    }
+
+    @FXML
+    public  void showAbout(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText(null);
+        Hyperlink projectLink= new Hyperlink("https://github.com/newcodor/ApiRequester");
+        projectLink.setOnAction(new EventHandler<ActionEvent>() {
+
+            @Override
+            public void handle(ActionEvent t) {
+                App.getInstance().getHostServices().showDocument(projectLink.getText());
+            }
+        });
+        alert.getDialogPane().setContent(projectLink);
+        alert.showAndWait();
     }
 //    @FXML
     public  void showProxyPanle(ActionEvent actionEvent){
