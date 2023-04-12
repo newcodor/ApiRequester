@@ -188,7 +188,7 @@ public class UIController<T> {
         stage.setTitle("About"); // Set the stage title
         // Set a scene with a button in the stage
         Parent root = (Parent) FXMLLoader.load(this.getClass().getResource("/fxml/about.fxml"));
-        Scene scene = new Scene(root,400,250);
+        Scene scene = new Scene(root,300,100);
         stage.setScene(scene);
         stage.show();
     }
