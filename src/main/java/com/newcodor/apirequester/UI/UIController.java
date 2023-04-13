@@ -44,6 +44,8 @@ public class UIController<T> {
     private ComboBox httpMethod;
 
     @FXML
+    private Button postButton;
+    @FXML
     public Label requestStatus;
 
     private static Lock lock = new ReentrantLock();
@@ -69,6 +71,10 @@ public class UIController<T> {
         httpMethod.getSelectionModel().select(0);
     }
 
+    @FXML
+    void setPostMethod(){
+        httpMethod.setValue("POST");
+    }
     @FXML
     void initialize() throws Exception{
         addAllowMethod();

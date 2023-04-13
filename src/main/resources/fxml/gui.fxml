@@ -27,7 +27,8 @@
          <children>
             <TextField fx:id="urlTextField" layoutX="2.0" layoutY="4.0" prefHeight="23.0" prefWidth="336.0" promptText="http://" />
             <Button id="fetchBtn" fx:id="fetchReponseBtn" layoutX="287.0" layoutY="31.0" mnemonicParsing="false" onAction="#handleFetchTask" text="fetch" />
-            <ComboBox fx:id="httpMethod" layoutX="6.0" layoutY="31.0" onDragEntered="#addAllowMethod" onZoomStarted="#addAllowMethod" prefHeight="23.0" prefWidth="89.0" promptText="GET" />
+            <ComboBox fx:id="httpMethod" layoutX="6.0" layoutY="31.0" onDragEntered="#addAllowMethod" onZoomStarted="#addAllowMethod" prefHeight="23.0" prefWidth="104.0" promptText="GET" />
+                  <Button fx:id="postButton" layoutX="114.0" layoutY="30.0" mnemonicParsing="false" onAction="#setPostMethod" text="POST" />
                   <TabPane layoutX="6.0" layoutY="57.0" prefHeight="239.0" prefWidth="379.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Content">
@@ -56,7 +57,7 @@
             <Insets left="8.0" />
          </VBox.margin>
       </Label>
-      <TableView prefHeight="200.0" prefWidth="200.0">
+      <TableView prefHeight="116.0" prefWidth="885.0">
         <columns>
           <TableColumn editable="false" prefWidth="401.0" sortable="false" text="Request" />
           <TableColumn editable="false" minWidth="0.0" prefWidth="145.0" text="Response" />

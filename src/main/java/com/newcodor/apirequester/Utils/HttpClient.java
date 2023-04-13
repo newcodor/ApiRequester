@@ -24,7 +24,7 @@ public class HttpClient {
     public static ArrayList<String>  allowMethod =new ArrayList<>();
     public static Proxy globalProxy = Proxy.NO_PROXY;
     static {
-        allowMethod.addAll(Arrays.asList("GET","POST"));
+        allowMethod.addAll(Arrays.asList("GET","POST","HEAD","PUT","DELETE","TRACE","OPTIONS"));
     }
     public  static boolean isHttps(String url){
         return url.startsWith("https");
@@ -124,13 +124,13 @@ public class HttpClient {
         conn.setDoOutput(true);
         if(null!=headers){
             for(Map.Entry<String,String>  entry : headers.entrySet()){
-                if(entry.getKey().equals("Content-Type") && conn.getRequestMethod().equals("GET")){
+                if(entry.getKey().equals("Content-Type") && !conn.getRequestMethod().equals("POST")){
                     continue;
                 }
                 conn.setRequestProperty(entry.getKey(),entry.getValue());
             }
         }
-        if(conn.getRequestMethod().equals("POST")){
+        if(conn.getRequestMethod().equals("POST") || conn.getRequestMethod().equals("PUT")){
             conn.setDoInput(true);
             if(body!=null){
                 if(body instanceof String){
