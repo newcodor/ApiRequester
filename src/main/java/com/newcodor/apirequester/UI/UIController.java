@@ -87,6 +87,7 @@ public class UIController<T> {
         if(url.isEmpty()){
             Alert alert = new Alert(Alert.AlertType.WARNING);
             alert.setTitle("Warning");
+            alert.setHeaderText(null);
             alert.setContentText("url can't be empty!");
             alert.showAndWait();
         }else{
