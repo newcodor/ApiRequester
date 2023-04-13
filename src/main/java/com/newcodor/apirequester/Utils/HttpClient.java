@@ -15,14 +15,12 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class HttpClient {
     public static ArrayList<String>  allowMethod =new ArrayList<>();
     public static Proxy globalProxy = Proxy.NO_PROXY;
+    public final static String defaultCharset = "UTF-8";
     static {
         allowMethod.addAll(Arrays.asList("GET","POST","HEAD","PUT","DELETE","TRACE","OPTIONS"));
     }
@@ -147,7 +145,12 @@ public class HttpClient {
             }
         }
         conn.connect();
-        HttpResponse response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,"UTF-8"), conn.getHeaderFields());
+        Map<String, List<String>> responseHeaders = conn.getHeaderFields();
+        String charset = defaultCharset;
+        if(responseHeaders.containsKey("Content-Type") && responseHeaders.get("Content-Type").get(0).toLowerCase().contains("charset=gbk")){
+            charset="GBK";
+        }
+        HttpResponse response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,charset), responseHeaders);
         System.out.println(response.staticCode);
         conn.disconnect();
         return  response;
