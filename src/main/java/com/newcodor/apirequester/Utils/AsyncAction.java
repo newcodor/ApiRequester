@@ -21,16 +21,20 @@ public class AsyncAction extends  Thread{
             if(method.isAccessible()){
                 method.setAccessible(true);
             }
+            /*
             System.out.println(method.getDeclaringClass());
             System.out.println(method.getAnnotatedParameterTypes());
             System.out.println(method.getDeclaredAnnotations());
             System.out.println(method.getParameterCount());
             System.out.println(method.getParameterTypes());
+             */
             Parameter [] parameters = method.getParameters();
+            /*
             for(Parameter pam : parameters){
                 System.out.println(""+pam.getName()+","+pam.getType());
             }
-            System.out.println();
+            */
+//            System.out.println();
 //          call static method for class
             if(Modifier.isStatic(method.getModifiers())){
                 method.invoke(null,this.params);
@@ -39,7 +43,7 @@ public class AsyncAction extends  Thread{
                 if(this.object==null){
                     this.object=this._class.newInstance();
                 }
-                System.out.println(this.object);
+//                System.out.println(this.object);
                 method.invoke(this.object,this.params);
             }
         }catch (Exception e){
@@ -53,9 +57,9 @@ public class AsyncAction extends  Thread{
         this.params = params;
         if(params.length>0){
             this.paramTypes =new Class[params.length];
-            if(String.class.equals(this.params[0].getClass())){
-                System.out.println("class ok ");
-            }
+//            if(String.class.equals(this.params[0].getClass())){
+//                System.out.println("class ok ");
+//            }
             for(int i=0;i<params.length;i++){
                 this.paramTypes[i]=params[i].getClass();
             }

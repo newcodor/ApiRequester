@@ -48,6 +48,9 @@ public class UIController<T> {
     @FXML
     public Label requestStatus;
 
+    @FXML
+    public Button pasteButton;
+
     private static Lock lock = new ReentrantLock();
     private static HashMap<String,Proxy.Type> proxyType = new HashMap();
     public static  HashMap<String,Object> proxySetting = new HashMap<>();
@@ -92,14 +95,8 @@ public class UIController<T> {
             alert.showAndWait();
         }else{
             responseTextArea.setText("");
-            requestStatus.setText("waiting....");
-            System.out.println(httpMethod.getValue());
-            System.out.println("request.....");
             HttpRequest request = new HttpRequest(httpMethod.getValue().toString(),url, HeaderController.conventListToMap(HeaderController.headers),ContentController.instance.bodyContent.getText());
-//            HashMap params = new HashMap();
-//            params.put("text",String.class);
 //            testOperation();
-            System.out.println("call instance: "+this);
             new AsyncAction(this,"fetch",request,responseTextArea,requestStatus).start();
 //            new AsyncAction("com.newcodor.apitest.UI.UIController","fetch",request,responseTextArea,requestStatus).start();
         }
@@ -111,7 +108,6 @@ public class UIController<T> {
         try{
 //            lock.lock();
             HttpResponse response = HttpClient.request(request.method,request.url,7,null,request.headers,request.content);
-//            Cache.setRequestStatus("Done");
             StringBuffer responseText = new StringBuffer();
 //            double scrollTop = targetTextArea.getScrollTop();
 //            int caretPosition =targetTextArea.caretPositionProperty().get();
@@ -129,7 +125,6 @@ public class UIController<T> {
                 }
             responseText.append("\n");
 //                targetTextArea.appendText("\n");
-//            System.out.println(response.responseText);
             if(response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
                 responseText.append(Formatter.prettyJson(response.responseText));
             }else{
@@ -151,7 +146,7 @@ public class UIController<T> {
             System.out.println(e.getMessage());
 //            e.printStackTrace();
         }finally {
-            System.out.println(status);
+//            System.out.println(status);
             if(!status.equals("Done")){
                 String finalStatus = status;
                 Platform.runLater(()->{

@@ -112,7 +112,6 @@ public class HttpClient {
         HttpURLConnection conn = null;
         if(isHttps(url)){
             conn = getHttpsConn(url,proxy);
-            System.out.println(conn);
         }else{
             conn =getHttpConn(url,proxy);
         }
@@ -151,7 +150,6 @@ public class HttpClient {
             charset="GBK";
         }
         HttpResponse response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,charset), responseHeaders);
-        System.out.println(response.staticCode);
         conn.disconnect();
         return  response;
     }
