@@ -51,6 +51,9 @@ public class UIController<T> {
     @FXML
     public Button pasteButton;
 
+    @FXML
+    public CheckBox isJsonPretty;
+
     private static Lock lock = new ReentrantLock();
     private static HashMap<String,Proxy.Type> proxyType = new HashMap();
     public static  HashMap<String,Object> proxySetting = new HashMap<>();
@@ -84,6 +87,17 @@ public class UIController<T> {
         Cache.setUIController(this);
     }
 
+//    @FXML
+//    void setJsonPretty(){
+//        System.out.println("before: "+this.isJsonPretty.isSelected());
+//        if(this.isJsonPretty.isSelected()){
+//            this.isJsonPretty.setSelected(true);
+//        }else{
+//            this.isJsonPretty.setSelected(false);
+//        }
+//        System.out.println("after: "+this.isJsonPretty.isSelected());
+//    }
+
     @FXML
     public void handleFetchTask(ActionEvent actionEvent) throws InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
         String url = this.urlTextField.getText().trim();
@@ -97,6 +111,7 @@ public class UIController<T> {
             responseTextArea.setText("");
             HttpRequest request = new HttpRequest(httpMethod.getValue().toString(),url, HeaderController.conventListToMap(HeaderController.headers),ContentController.instance.bodyContent.getText());
 //            testOperation();
+            request.headers.put("Accept","*/*");
             new AsyncAction(this,"fetch",request,responseTextArea,requestStatus).start();
 //            new AsyncAction("com.newcodor.apitest.UI.UIController","fetch",request,responseTextArea,requestStatus).start();
         }
@@ -125,7 +140,7 @@ public class UIController<T> {
                 }
             responseText.append("\n");
 //                targetTextArea.appendText("\n");
-            if(response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
+            if(this.isJsonPretty.isSelected() && response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
                 responseText.append(Formatter.prettyJson(response.responseText));
             }else{
                 responseText.append(response.responseText);
@@ -143,7 +158,7 @@ public class UIController<T> {
             status= e1.getMessage().toString();
         } catch (Exception e){
 //            requestStatus.setText(e.getMessage());
-            System.out.println(e.getMessage());
+            System.out.println("error:"+e.getMessage());
 //            e.printStackTrace();
         }finally {
 //            System.out.println(status);

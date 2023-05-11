@@ -91,9 +91,15 @@ public class HttpClient {
 
     public static String getBodyFromConn(HttpURLConnection conn,String encoding) throws IOException {
         String body = "";
-        BufferedReader bufferedReader =  null;
-        if(conn!=null && (conn.getResponseCode() == 200)) {
-            bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream(),encoding));
+        BufferedReader bufferedReader = null;
+        InputStreamReader in = null;
+        if (conn != null && conn.getContentLength() != 0) {
+            if (conn.getResponseCode() >= 400) {
+                in = new InputStreamReader(conn.getErrorStream(), encoding);
+            } else {
+                in = new InputStreamReader(conn.getInputStream(), encoding);
+            }
+            bufferedReader = new BufferedReader(in);
 
             StringBuffer bodys = new StringBuffer();
             String line = null;
@@ -143,15 +149,17 @@ public class HttpClient {
                 }
             }
         }
-        conn.connect();
-        Map<String, List<String>> responseHeaders = conn.getHeaderFields();
         String charset = defaultCharset;
+        Map<String, List<String>> responseHeaders = null;
+        HttpResponse response =null;
+        conn.connect();
+        responseHeaders = conn.getHeaderFields();
         if(responseHeaders.containsKey("Content-Type") && responseHeaders.get("Content-Type").get(0).toLowerCase().contains("charset=gbk")){
             charset="GBK";
         }
-        HttpResponse response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,charset), responseHeaders);
-        conn.disconnect();
-        return  response;
+        response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,charset), responseHeaders);
+
+        return response;
     }
 
 }

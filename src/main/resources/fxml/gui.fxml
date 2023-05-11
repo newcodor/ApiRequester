@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.newcodor.apirequester.UI.UIController">
+<VBox minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.newcodor.apirequester.UI.UIController">
 <children>
 <MenuBar maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0">
   <menus>
@@ -75,8 +75,8 @@
             </FlowPane>
             <FlowPane>
                <children>
-                  <CheckBox mnemonicParsing="false" text="Json Pretty" />
-            <TextArea fx:id="responseTextArea" prefHeight="400.0" prefWidth="420.0" style="-fx-background-color: #1d1626;">
+                  <CheckBox fx:id="isJsonPretty" mnemonicParsing="false" selected="true" text="Json Pretty" />
+            <TextArea fx:id="responseTextArea" minWidth="50.0" prefHeight="400.0" style="-fx-background-color: #1d1626; -fx-wrap-text: true;">
                      <FlowPane.margin>
                         <Insets top="3.0" />
                      </FlowPane.margin>
