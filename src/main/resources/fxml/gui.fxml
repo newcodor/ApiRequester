@@ -41,6 +41,7 @@
                         <Insets left="5.0" />
                      </FlowPane.margin>
                   </Separator>
+                  <Button fx:id="getButton" mnemonicParsing="false" onAction="#setGetMethod" text="GET" />
                   <Button fx:id="postButton" mnemonicParsing="false" onAction="#setPostMethod" text="POST">
                      <FlowPane.margin>
                         <Insets left="5.0" />

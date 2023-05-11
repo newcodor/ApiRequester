@@ -44,6 +44,9 @@ public class UIController<T> {
     private ComboBox httpMethod;
 
     @FXML
+    private Button getButton;
+
+    @FXML
     private Button postButton;
     @FXML
     public Label requestStatus;
@@ -76,11 +79,17 @@ public class UIController<T> {
 //        httpMethod.setValue(allowMethod.get(0));
         httpMethod.getSelectionModel().select(0);
     }
+    @FXML
+    void setGetMethod(){
+        httpMethod.setValue("GET");
+    }
 
     @FXML
     void setPostMethod(){
         httpMethod.setValue("POST");
     }
+
+
     @FXML
     void initialize() throws Exception{
         addAllowMethod();
