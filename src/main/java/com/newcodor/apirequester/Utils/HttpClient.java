@@ -1,6 +1,7 @@
 package com.newcodor.apirequester.Utils;
 
 
+import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,12 +116,15 @@ public class HttpClient {
         if(!allowMethod.contains(method)){
             throw new Exception("UnSupported HTTP Method: "+method);
         }
+        //allow restricted http header: Host .....
+        System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
         HttpURLConnection conn = null;
         if(isHttps(url)){
             conn = getHttpsConn(url,proxy);
         }else{
             conn =getHttpConn(url,proxy);
         }
+
         conn.setRequestMethod(method);
         conn.setConnectTimeout(timeout*1000);
         conn.setReadTimeout(timeout*1000);
@@ -160,6 +164,50 @@ public class HttpClient {
         response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,charset), responseHeaders);
 
         return response;
+    }
+
+    public static HttpRequest StringToRequest(String req) {
+        HttpRequest request = new HttpRequest();
+        String [] item = req.split("\n");
+        Iterator  items  = Arrays.stream(item).iterator();
+        String line = "";
+        String [] headerItem;
+        if(items.hasNext()){
+            headerItem = items.next().toString().split(" ");
+            request.method = headerItem[0].trim();
+            request.uri=headerItem[1].trim();
+        }else{
+            return null;
+        }
+        request.headers=new HashMap();
+        while (items.hasNext()){
+            line= items.next().toString().trim();
+            if(line.isEmpty()){
+                break;
+            }else{
+                headerItem = line.split(":",2);
+                request.headers.put(headerItem[0].trim(),headerItem[1].trim());
+                if(headerItem[0].trim().toLowerCase().equals("host")){
+                    request.Host =headerItem[1].trim();
+                    if(request.Host.endsWith(":443") || request.Host.endsWith(":8443")){
+                        request.protocol = "https";
+                    }
+                    request.url =request.getUrl();
+                }
+            }
+
+        }
+        StringBuilder sb = new StringBuilder();
+        while (items.hasNext()){
+            sb.append(items.next());
+        }
+        request.body =sb.toString();
+        System.out.println(request.toString());
+//        for (String i:item
+//             ) {
+//            System.out.println(i);
+//        }
+        return  request;
     }
 
 }

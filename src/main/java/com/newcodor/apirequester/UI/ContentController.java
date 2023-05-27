@@ -10,6 +10,7 @@ import java.util.Base64;
 public class ContentController {
 
 
+
     @FXML
     public  ComboBox contentTypeList;
 
@@ -27,6 +28,10 @@ public class ContentController {
 
     public  static ContentController instance;
 
+    public void setContentUIParam(String  contentType, String body) {
+        this.contentTypeList.setValue(contentType);
+        this.bodyContent.setText(body);
+    }
 
     @FXML
     private void initContentTypeList(){

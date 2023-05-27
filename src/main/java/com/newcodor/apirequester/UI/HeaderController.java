@@ -12,7 +12,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class HeaderController<T> {
@@ -28,7 +30,6 @@ public class HeaderController<T> {
     public static ObservableList<Header> headers = FXCollections.observableArrayList();
 
 //    public ArrayList<String> tableColumnName = new ArrayList<>();
-    public  ArrayList<String>  headerNames = new ArrayList<>();
 
     public  static HeaderController instance;
     @FXML
@@ -36,7 +37,6 @@ public class HeaderController<T> {
         this.instance = this;
        ObservableList<TableColumn> columns = headersTable.getColumns();
        headers.add(new Header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"));
-       headerNames.add("User-Agent");
        ArrayList<String> headerFields = new ArrayList(){};
        for (Field field : Header.class.getFields()) {
            headerFields.add(field.getName());
@@ -68,6 +68,31 @@ public class HeaderController<T> {
 
    }
 
+    public  boolean containHeader(Header header){
+        for (Header h: headers) {
+            if(header.getName().equals(h.getName())){
+                return  true;
+            }
+        }
+        return false;
+    }
+
+    public  boolean containHeader(String headerName){
+        for (Header h: headers) {
+            if(headerName.equals(h.getName())){
+                return  true;
+            }
+        }
+        return false;
+    }
+
+    public  void setHeaders(HashMap<String,String> headers){
+        this.headers.clear();
+        for (Map.Entry<String,String> h: headers.entrySet()) {
+            this.headers.add(new Header(h.getKey(),h.getValue()));
+        }
+    }
+
     public void  updateHeaderNames(TableColumn.CellEditEvent<T, Boolean> t) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 //            String editName = ((Header)t.getRowValue()).getName();
         String oldValue = String.valueOf(t.getOldValue()).trim();
@@ -76,7 +101,7 @@ public class HeaderController<T> {
         String propertyName = t.getTableColumn().getText().trim();
         System.out.println(propertyName);
             if(oldValue!=newValue){
-                if(propertyName.equals("Name") && headerNames.contains(newValue)){
+                if(propertyName.equals("Name") && containHeader(newValue)){
                     Alert info = new Alert(Alert.AlertType.WARNING);
                     info.setTitle("Warning");
                     info.setContentText(newValue+" is exit!");
@@ -95,10 +120,6 @@ public class HeaderController<T> {
                     Method setPropertyMethod=  oldHeader.getClass().getDeclaredMethod("set"+propertyName,String.class);
                     setPropertyMethod.invoke(oldHeader,newValue);
                     //                    this.headers.set(t.getTableView().getSelectionModel().getSelectedIndex(),().setName(newValue));
-                    if(propertyName.equals("Name")){
-                        headerNames.remove(oldValue);
-                        headerNames.add(newValue);
-                    }
 
                     System.out.println("new: "+this.headers);
                 }
@@ -107,9 +128,9 @@ public class HeaderController<T> {
 
     @FXML
     public void addHeaderToTableView(ActionEvent actionEvent){
-        if(!this.headerNames.contains(headerName.getText().trim())){
-            this.headers.add(new Header(headerName.getText().trim(),headerValue.getText().trim()));
-            headerNames.add(headerName.getText().trim());
+        Header  newHeader = new Header(headerName.getText().trim(),headerValue.getText().trim());
+        if(!containHeader(newHeader)){
+            this.headers.add(newHeader);
             System.out.println(headers);
         }else{
             Alert info = new Alert(Alert.AlertType.WARNING);
@@ -124,7 +145,6 @@ public class HeaderController<T> {
         if(this.headersTable.getItems().size()>0){
             Header deleteHeader = (Header) this.headersTable.getSelectionModel().getSelectedItem();
             this.headers.remove(deleteHeader);
-            headerNames.remove(deleteHeader.getName());
         }
     }
 

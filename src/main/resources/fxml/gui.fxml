@@ -47,7 +47,7 @@
                         <Insets left="5.0" />
                      </FlowPane.margin>
                   </Button>
-                  <Button fx:id="pasteButton" mnemonicParsing="false" text="Paste">
+                  <Button fx:id="pasteButton" mnemonicParsing="false" onAction="#setRequestFromClipboard" text="Paste">
                      <FlowPane.margin>
                         <Insets left="5.0" />
                      </FlowPane.margin>

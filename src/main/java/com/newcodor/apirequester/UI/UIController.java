@@ -19,6 +19,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
@@ -106,7 +108,40 @@ public class UIController<T> {
 //        }
 //        System.out.println("after: "+this.isJsonPretty.isSelected());
 //    }
+    public static String getTextFromClipboard(){
+        String clipboardText = null;
+        Clipboard clipboard = Clipboard.getSystemClipboard();
+        if (clipboard.hasString()) {
+            clipboardText= clipboard.getString();
+        }
+        return  clipboardText;
+    }
 
+    public void setRequestToUI(HttpRequest request){
+        this.httpMethod.setValue(request.method);
+        this.urlTextField.setText(request.url);
+        ContentController.instance.setContentUIParam(request.headers.get("Content-Type"),request.body);
+        HeaderController.instance.setHeaders(request.headers);
+//        HeaderController.instance.
+    }
+
+    @FXML
+    public  void setRequestFromClipboard(){
+        String pastText = getTextFromClipboard();
+        if(pastText!=null){
+            System.out.println(pastText);
+            HttpRequest request = HttpClient.StringToRequest(pastText);
+            if(!HttpClient.allowMethod.contains(request.method)){
+                System.out.println("[-] not allowed method: "+request.method);
+                return;
+            }else{
+                setRequestToUI(request);
+            }
+        }else{
+            System.out.println("[-] no any content from clipboard!");
+        }
+
+    }
     @FXML
     public void handleFetchTask(ActionEvent actionEvent) throws InvocationTargetException, IllegalAccessException, MalformedURLException, ClassNotFoundException {
         String url = this.urlTextField.getText().trim();
@@ -131,7 +166,7 @@ public class UIController<T> {
         String status ="Done";
         try{
 //            lock.lock();
-            HttpResponse response = HttpClient.request(request.method,request.url,7,null,request.headers,request.content);
+            HttpResponse response = HttpClient.request(request.method,request.url,7,null,request.headers,request.body);
             StringBuffer responseText = new StringBuffer();
 //            double scrollTop = targetTextArea.getScrollTop();
 //            int caretPosition =targetTextArea.caretPositionProperty().get();
