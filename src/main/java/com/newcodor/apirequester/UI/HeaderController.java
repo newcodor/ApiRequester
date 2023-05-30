@@ -153,7 +153,9 @@ public class HeaderController<T> {
         for(Header header: headers){
             headerMap.put(header.getName(),header.getValue());
         }
-        headerMap.put("Content-Type",ContentController.instance.contentTypeList.getValue().toString().trim());
+        if(null!=ContentController.instance.contentTypeList.getValue()){
+            headerMap.put("Content-Type",ContentController.instance.contentTypeList.getValue().toString().trim());
+        }
         return  headerMap;
     }
 }
