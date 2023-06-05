@@ -29,7 +29,13 @@ public class ContentController {
     public  static ContentController instance;
 
     public void setContentUIParam(String  contentType, String body) {
-        this.contentTypeList.setValue(contentType);
+        if(null!=contentType){
+            this.contentTypeList.setValue(contentType);
+        }
+        this.bodyContent.setText(body);
+    }
+
+    public void setContentUIParam(String body) {
         this.bodyContent.setText(body);
     }
 

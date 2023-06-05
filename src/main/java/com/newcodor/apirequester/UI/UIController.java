@@ -120,7 +120,7 @@ public class UIController<T> {
     public void setRequestToUI(HttpRequest request){
         this.httpMethod.setValue(request.method);
         this.urlTextField.setText(request.url);
-        ContentController.instance.setContentUIParam(request.headers.get("Content-Type"),request.body);
+        ContentController.instance.setContentUIParam(request.headers.remove("Content-Type"),request.body);
         HeaderController.instance.setHeaders(request.headers);
 //        HeaderController.instance.
     }
