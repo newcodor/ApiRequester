@@ -114,11 +114,19 @@
             <Insets top="11.0" />
          </padding>
       </SplitPane>
-<Label fx:id="requestStatus" text="Ready">
-         <padding>
-            <Insets left="8.0" />
-         </padding>
-      </Label>
+      <HBox  prefHeight="17.0" prefWidth="922.0">
+         <children>
+            <Label fx:id="requestStatus" alignment="CENTER_LEFT" text="Ready">
+               <padding>
+                  <Insets left="8.0" />
+               </padding></Label>
+             <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="responseSizeAndTime" alignment="CENTER_RIGHT">
+               <padding>
+                  <Insets right="8.0" />
+               </padding></Label>
+         </children>
+      </HBox>
       <TableView prefHeight="90.0">
         <columns>
           <TableColumn editable="false" prefWidth="401.0" sortable="false" text="Request" />

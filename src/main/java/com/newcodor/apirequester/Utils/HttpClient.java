@@ -170,6 +170,7 @@ public class HttpClient {
         String charset = defaultCharset;
         Map<String, List<String>> responseHeaders = null;
         HttpResponse response = null;
+        long startTime = System.currentTimeMillis();
         conn.connect();
         responseHeaders = conn.getHeaderFields();
         if (responseHeaders.containsKey("Content-Type") && responseHeaders.get("Content-Type").get(0).toLowerCase().contains("charset=gbk")) {
@@ -182,7 +183,17 @@ public class HttpClient {
             zipMehtod = responseHeaders.get("content-encoding").get(0).trim();
         }
         response = new HttpResponse(conn.getResponseCode(), getBodyFromConn(conn, charset, zipMehtod), responseHeaders);
-
+        if(headers.containsKey("Connection") && headers.get("Connection").equals("close")){
+//            System.out.println("close socket");
+            conn.disconnect();
+        }else{
+//            System.out.println("keep alive");
+            conn.getInputStream().close();
+        }
+        long endTime = System.currentTimeMillis();
+        long timeSpent = endTime - startTime;
+        response.setResponseTime(timeSpent);
+//        System.out.println(timeSpent);
         return response;
     }
 }

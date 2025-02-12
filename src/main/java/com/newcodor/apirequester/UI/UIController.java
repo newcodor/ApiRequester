@@ -50,6 +50,8 @@ public class UIController<T> {
     private Button postButton;
     @FXML
     public Label requestStatus;
+    @FXML
+    public Label responseSizeAndTime;
 
     @FXML
     public Button pasteButton;
@@ -185,6 +187,7 @@ public class UIController<T> {
     void clearUI() throws  Exception{
         Cache.currentRequest = new HttpRequest();
         setRequestToUI(Cache.currentRequest);
+        responseSizeAndTime.setText("");
     }
 
     public void setRequestToUI(HttpRequest request){
@@ -279,15 +282,15 @@ public class UIController<T> {
             for (Map.Entry<String, List<String>> entry : response.headers.entrySet()) {
                     for (String value : entry.getValue()) {
                         if (null == entry.getKey()) {
-                            responseText.insert(0,value + "\n");
+                            responseText.insert(0,value + "\r\n");
 //                            targetTextArea.insertText(0, value + "\n");
                         } else {
-                            responseText.append(entry.getKey() + ":" + value + "\n");
+                            responseText.append(entry.getKey() + ":" + value + "\r\n");
 //                            targetTextArea.appendText(entry.getKey() + ":" + value + "\n");
                         }
                     }
                 }
-            responseText.append("\n");
+            responseText.append("\r\n");
 //                targetTextArea.appendText("\n");
             if(this.isJsonPretty.isSelected() && response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
                 responseText.append(Formatter.prettyJson(response.responseText));
@@ -297,9 +300,11 @@ public class UIController<T> {
 //                targetTextArea.appendText(response.responseText);
 //                targetTextArea.setScrollTop(scrollTop);
 //                targetTextArea.positionCaret(caretPosition);
+            response.setContentSize(responseText.toString().getBytes().length);
             targetTextArea.setText(responseText.toString());
             Platform.runLater(()->{
                     requestStatus.setText("Done");
+                    responseSizeAndTime.setText(response.getContentSize()+" bytes | "+ response.getResponseTime()+" millis");
                 });
         }catch (SocketTimeoutException | SSLException | SocketException e1  ){
 //            Cache.uiController.requestStatus.setText(e1.getMessage());
