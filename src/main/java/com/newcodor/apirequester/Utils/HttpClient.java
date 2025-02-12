@@ -183,6 +183,7 @@ public class HttpClient {
             zipMehtod = responseHeaders.get("content-encoding").get(0).trim();
         }
         response = new HttpResponse(conn.getResponseCode(), getBodyFromConn(conn, charset, zipMehtod), responseHeaders);
+        long endTime = System.currentTimeMillis();
         if(headers.containsKey("Connection") && headers.get("Connection").equals("close")){
 //            System.out.println("close socket");
             conn.disconnect();
@@ -190,7 +191,6 @@ public class HttpClient {
 //            System.out.println("keep alive");
             conn.getInputStream().close();
         }
-        long endTime = System.currentTimeMillis();
         long timeSpent = endTime - startTime;
         response.setResponseTime(timeSpent);
 //        System.out.println(timeSpent);
