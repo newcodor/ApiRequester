@@ -5,11 +5,9 @@ import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import org.jetbrains.annotations.Nullable;
 
+import javax.jws.soap.SOAPBinding;
 import javax.net.ssl.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.Proxy;
 import java.net.URL;
@@ -19,20 +17,22 @@ import java.security.cert.X509Certificate;
 import java.util.*;
 
 public class HttpClient {
-    public static ArrayList<String>  allowMethod =new ArrayList<>();
+    public static ArrayList<String> allowMethod = new ArrayList<>();
     public static Proxy globalProxy = Proxy.NO_PROXY;
     public final static String defaultCharset = "UTF-8";
+
     static {
-        allowMethod.addAll(Arrays.asList("GET","POST","HEAD","PUT","DELETE","TRACE","OPTIONS"));
+        allowMethod.addAll(Arrays.asList("GET", "POST", "HEAD", "PUT", "DELETE", "TRACE", "OPTIONS"));
     }
-    public  static boolean isHttps(String url){
+
+    public static boolean isHttps(String url) {
         return url.startsWith("https");
     }
 
     private static HttpURLConnection getHttpConn(String _url, Proxy _proxy) throws Exception {
         URL url = new URL(_url);
-        Proxy proxy =globalProxy;
-        if(_proxy != null){
+        Proxy proxy = globalProxy;
+        if (_proxy != null) {
             proxy = _proxy;
         }
         HttpURLConnection conn;
@@ -43,10 +43,10 @@ public class HttpClient {
     private static HttpsURLConnection getHttpsConn(String _url, Proxy _proxy) throws Exception {
         URL url = new URL(_url);
         Proxy proxy = globalProxy;
-        if(_proxy != null){
+        if (_proxy != null) {
             proxy = _proxy;
         }
-        HttpsURLConnection conn ;
+        HttpsURLConnection conn;
         conn = (HttpsURLConnection) url.openConnection(proxy);
 
         TrustManager[] trustManagers = {new HttpsTrustManager()};
@@ -90,59 +90,73 @@ public class HttpClient {
 //        return proxyItem;
 //    }
 
-    public static String getBodyFromConn(HttpURLConnection conn,String encoding) throws IOException {
+    public static String getBodyFromConn(HttpURLConnection conn, String encoding, String zipMethod) throws IOException {
         String body = "";
         BufferedReader bufferedReader = null;
+        InputStream inputStream = null;
         InputStreamReader in = null;
         if (conn != null && conn.getContentLength() != 0) {
             if (conn.getResponseCode() >= 400) {
-                in = new InputStreamReader(conn.getErrorStream(), encoding);
+                inputStream = conn.getErrorStream();
             } else {
-                in = new InputStreamReader(conn.getInputStream(), encoding);
+                inputStream = conn.getInputStream();
             }
-            bufferedReader = new BufferedReader(in);
 
-            StringBuffer bodys = new StringBuffer();
-            String line = null;
-            while ((line = bufferedReader.readLine()) != null) {
-                bodys.append(line);
-                bodys.append("\r\n");
+            if (!zipMethod.equals("")) {
+                if(zipMethod.equals("gzip")){
+                    body = GzipDecoder.decompressGzip(inputStream);
+                }
+            } else {
+                in = new InputStreamReader(inputStream, encoding);
+                bufferedReader = new BufferedReader(in);
+
+                StringBuffer bodys = new StringBuffer();
+                String line = null;
+                while ((line = bufferedReader.readLine()) != null) {
+                    bodys.append(line);
+                    bodys.append("\r\n");
+                }
+                body = bodys.toString();
             }
-            body = bodys.toString();
+
         }
-        return  body;
+        return body;
     }
-    public static HttpResponse request(String method, String url, int timeout, @Nullable Proxy proxy, @Nullable HashMap<String,String> headers, @Nullable Object body) throws  Exception{
-        if(!allowMethod.contains(method)){
-            throw new Exception("UnSupported HTTP Method: "+method);
+
+    public static HttpResponse request(String method, String url, int timeout, @Nullable Proxy proxy, @Nullable HashMap<String, String> headers, @Nullable Object body) throws Exception {
+        if (!allowMethod.contains(method)) {
+            throw new Exception("UnSupported HTTP Method: " + method);
         }
         //allow restricted http header: Host .....
         System.setProperty("sun.net.http.allowRestrictedHeaders", "true");
+
         HttpURLConnection conn = null;
-        if(isHttps(url)){
-            conn = getHttpsConn(url,proxy);
-        }else{
-            conn =getHttpConn(url,proxy);
+        String zipMehtod = "";
+        if (isHttps(url)) {
+            conn = getHttpsConn(url, proxy);
+        } else {
+            conn = getHttpConn(url, proxy);
         }
 
         conn.setRequestMethod(method);
-        conn.setConnectTimeout(timeout*1000);
-        conn.setReadTimeout(timeout*1000);
+        conn.setConnectTimeout(timeout * 1000);
+        conn.setReadTimeout(timeout * 1000);
         conn.setDoOutput(true);
-        if(null!=headers){
-            for(Map.Entry<String,String>  entry : headers.entrySet()){
-                if(entry.getKey().equals("Content-Type") && !conn.getRequestMethod().equals("POST")){
+        if (null != headers) {
+            for (Map.Entry<String, String> entry : headers.entrySet()) {
+                if (entry.getKey().equals("Content-Type") && !conn.getRequestMethod().equals("POST")) {
                     continue;
                 }
-                conn.setRequestProperty(entry.getKey(),entry.getValue());
+                conn.setRequestProperty(entry.getKey(), entry.getValue());
             }
         }
-        if(conn.getRequestMethod().equals("POST") || conn.getRequestMethod().equals("PUT")){
+
+        if (conn.getRequestMethod().equals("POST") || conn.getRequestMethod().equals("PUT")) {
             conn.setDoInput(true);
-            if(body!=null){
-                if(body instanceof String){
+            if (body != null) {
+                if (body instanceof String) {
                     OutputStream out = conn.getOutputStream();
-                    out.write(((String)body).getBytes("UTF-8"));
+                    out.write(((String) body).getBytes("UTF-8"));
                     out.flush();
                     out.close();
                 } else if (body instanceof Byte) {
@@ -155,61 +169,22 @@ public class HttpClient {
         }
         String charset = defaultCharset;
         Map<String, List<String>> responseHeaders = null;
-        HttpResponse response =null;
+        HttpResponse response = null;
         conn.connect();
         responseHeaders = conn.getHeaderFields();
-        if(responseHeaders.containsKey("Content-Type") && responseHeaders.get("Content-Type").get(0).toLowerCase().contains("charset=gbk")){
-            charset="GBK";
+        if (responseHeaders.containsKey("Content-Type") && responseHeaders.get("Content-Type").get(0).toLowerCase().contains("charset=gbk")) {
+            charset = "GBK";
         }
-        response = new HttpResponse(conn.getResponseCode(),getBodyFromConn(conn,charset), responseHeaders);
+        if (responseHeaders.containsKey("Content-Encoding")) {
+//            isGzip = true;
+            zipMehtod = responseHeaders.get("Content-Encoding").get(0).trim();
+        } else if (responseHeaders.containsKey("content-encoding")) {
+            zipMehtod = responseHeaders.get("content-encoding").get(0).trim();
+        }
+        response = new HttpResponse(conn.getResponseCode(), getBodyFromConn(conn, charset, zipMehtod), responseHeaders);
 
         return response;
     }
-
-    public static HttpRequest StringToRequest(String req) {
-        HttpRequest request = new HttpRequest();
-        String [] item = req.split("\n");
-        Iterator  items  = Arrays.stream(item).iterator();
-        String line = "";
-        String [] headerItem;
-        if(items.hasNext()){
-            headerItem = items.next().toString().split(" ");
-            request.method = headerItem[0].trim();
-            request.uri=headerItem[1].trim();
-        }else{
-            return null;
-        }
-        request.headers=new HashMap();
-        while (items.hasNext()){
-            line= items.next().toString().trim();
-            if(line.isEmpty()){
-                break;
-            }else{
-                headerItem = line.split(":",2);
-                request.headers.put(headerItem[0].trim(),headerItem[1].trim());
-                if(headerItem[0].trim().toLowerCase().equals("host")){
-                    request.Host =headerItem[1].trim();
-                    if(request.Host.endsWith(":443") || request.Host.endsWith(":8443")){
-                        request.protocol = "https";
-                    }
-                    request.url =request.getUrl();
-                }
-            }
-
-        }
-        StringBuilder sb = new StringBuilder();
-        while (items.hasNext()){
-            sb.append(items.next());
-        }
-        request.body =sb.toString();
-        System.out.println(request.toString());
-//        for (String i:item
-//             ) {
-//            System.out.println(i);
-//        }
-        return  request;
-    }
-
 }
 
 class HttpsTrustManager implements X509TrustManager {

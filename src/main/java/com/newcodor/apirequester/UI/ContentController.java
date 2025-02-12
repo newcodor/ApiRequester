@@ -1,6 +1,9 @@
 package com.newcodor.apirequester.UI;
 
+import com.newcodor.apirequester.Utils.Cache;
 import com.newcodor.apirequester.Utils.Formatter;
+import com.newcodor.apirequester.Utils.HttpClient;
+import com.newcodor.apirequester.bean.HttpRequest;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -77,8 +80,45 @@ public class ContentController {
     }
 
     @FXML
+    public  void base64DecodeContent(){
+        int selectedContentLength = bodyContent.getSelection().getLength();
+        if(selectedContentLength==0){
+            String fullContent = bodyContent.getText();
+            if(!fullContent.isEmpty()){
+                bodyContent.setText(new String(Base64.getDecoder().decode(fullContent.replace("\n", ""))));
+            }
+        }else{
+            bodyContent.replaceSelection(new String(Base64.getDecoder().decode(bodyContent.getSelectedText().replace("\n", ""))));
+        }
+    }
+
+    @FXML
     public  void initialize(){
         this.instance = this;
         initContentTypeList();
+        this.instance = this;
+        bodyContent.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!Cache.isUIUpdating && newValue!=oldValue) { // 当焦点离开时（newValue为false）
+                String input = bodyContent.getText().trim();
+                if (input.isEmpty()) {
+                    System.out.println("error: empty");
+                } else {
+                    Cache.currentRequest.setBody(input);
+                    RawController.instance.rawContent.setText(HttpRequest.RequestToString(Cache.currentRequest));
+                }
+            }
+        });
+        contentTypeList.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (!Cache.isUIUpdating && newValue!=oldValue) { // 当焦点离开时（newValue为false）
+                if (contentTypeList.getValue().toString().isEmpty()) {
+                    System.out.println("error: empty");
+                } else {
+                    Cache.currentRequest.setHeadersByKV("Content-Type",contentTypeList.getValue().toString());
+                    RawController.instance.setHttpRaw(HttpRequest.RequestToString(Cache.currentRequest));
+
+                }
+            }
+        });
+
     }
 }

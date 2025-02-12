@@ -52,6 +52,11 @@
                         <Insets left="5.0" />
                      </FlowPane.margin>
                   </Button>
+                  <Button fx:id="clearUIButton" mnemonicParsing="false" onAction="#clearUI" text="Clear">
+                     <FlowPane.margin>
+                        <Insets left="5.0" />
+                     </FlowPane.margin>
+                  </Button>
                   <TabPane prefHeight="400.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE">
                     <tabs>
                       <Tab text="Content">
@@ -64,9 +69,14 @@
                               <fx:include source="header.fxml" />
                            </content>
                       </Tab>
+                        <Tab text="Raw">
+                          <content>
+                              <fx:include source="raw.fxml" />
+                          </content>
+                        </Tab>
                     </tabs>
                      <padding>
-                        <Insets top="5.0" />
+                        <Insets top="3.0" />
                      </padding>
                   </TabPane>
                </children>
@@ -76,7 +86,16 @@
             </FlowPane>
             <FlowPane>
                <children>
-                  <CheckBox fx:id="isJsonPretty" mnemonicParsing="false" selected="true" text="Json Pretty" />
+                  <CheckBox fx:id="useHTTPS" mnemonicParsing="false" text="Use HTTPS">
+                     <FlowPane.margin>
+                        <Insets right="5.0" />
+                     </FlowPane.margin>
+                  </CheckBox>
+                  <CheckBox fx:id="isJsonPretty" mnemonicParsing="false" selected="true" text="Json Pretty">
+                     <FlowPane.margin>
+                        <Insets right="5.0" />
+                     </FlowPane.margin></CheckBox>
+                  <RadioButton fx:id="useProxy" mnemonicParsing="false" onAction="#setProxyStatus" text="Proxy off" />
             <TextArea fx:id="responseTextArea" minWidth="50.0" prefHeight="400.0" style="-fx-background-color: #1d1626; -fx-wrap-text: true;">
                      <FlowPane.margin>
                         <Insets top="3.0" />
@@ -96,9 +115,9 @@
          </padding>
       </SplitPane>
 <Label fx:id="requestStatus" text="Ready">
-         <VBox.margin>
+         <padding>
             <Insets left="8.0" />
-         </VBox.margin>
+         </padding>
       </Label>
       <TableView prefHeight="90.0">
         <columns>

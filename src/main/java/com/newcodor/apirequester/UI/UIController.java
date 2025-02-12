@@ -8,7 +8,6 @@ import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
@@ -20,7 +19,6 @@ import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.scene.input.Clipboard;
-import javafx.scene.input.ClipboardContent;
 
 import javax.net.ssl.SSLException;
 import java.io.IOException;
@@ -57,7 +55,16 @@ public class UIController<T> {
     public Button pasteButton;
 
     @FXML
+    public Button clearUIButton;
+
+    @FXML
     public CheckBox isJsonPretty;
+
+    @FXML
+    public CheckBox useHTTPS;
+
+    @FXML
+    public RadioButton useProxy;
 
     private static Lock lock = new ReentrantLock();
     private static HashMap<String,Proxy.Type> proxyType = new HashMap();
@@ -71,6 +78,8 @@ public class UIController<T> {
         proxySetting.put("host","127.0.0.1");
         proxySetting.put("port","8080");
     }
+
+
     @FXML
     void addAllowMethod() throws  Exception{
         ArrayList<String> allowMethod = HttpClient.allowMethod;
@@ -91,11 +100,66 @@ public class UIController<T> {
         httpMethod.setValue("POST");
     }
 
-
+    @FXML
+    void setProxyStatus(){
+        if(useProxy.isSelected()){
+            useProxy.setText("Proxy on");
+            HttpClient.globalProxy= new Proxy((Proxy.Type)proxyType.get(proxySetting.get("type")),new InetSocketAddress((String) proxySetting.get("host"),Integer.parseInt((String)proxySetting.get("port"))));;
+            proxySetting.put("enable",true);
+        }else{
+            proxySetting.put("enable",false);
+            HttpClient.globalProxy= Proxy.NO_PROXY;
+            useProxy.setText("Proxy off");
+        }
+    }
     @FXML
     void initialize() throws Exception{
         addAllowMethod();
         Cache.setUIController(this);
+        urlTextField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!Cache.isUIUpdating && newValue!=oldValue) { // 当修改值时
+                String input = urlTextField.getText().trim();
+                if (input.isEmpty()) {
+                    System.out.println("error: empty");
+                } else {
+                    System.out.println("udpate url");
+                    String previousHost = Cache.currentRequest.getHost();
+                    String previousUri = Cache.currentRequest.getUri();
+                    if(!RawController.instance.getHttpRaw().isEmpty() && HttpRequest.getUriFromUrl(input).equals(previousUri)){
+                        Cache.currentRequest.setUrl(input);
+                        RawController.instance.setHttpRaw(HttpRequest.RequestToString(Cache.currentRequest));
+
+                    }else{
+                        System.out.println("new request");
+                        Cache.currentRequest = new HttpRequest();
+                        Cache.currentRequest.setUrl(input);
+                        Cache.currentRequest.setHeadersByKV("Host",Cache.currentRequest.getHost());
+                        setRequestToUI(Cache.currentRequest);
+                    }
+
+                }
+            }
+        });
+        httpMethod.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (!Cache.isUIUpdating && newValue!=oldValue) { // 当焦点离开时（newValue为false）
+                if (httpMethod.getValue().toString().isEmpty()) {
+                    System.out.println("error: empty");
+                } else {
+                    Cache.currentRequest.setMethod(httpMethod.getValue().toString());
+                    RawController.instance.setHttpRaw(HttpRequest.RequestToString(Cache.currentRequest));
+                }
+            }
+        });
+        useHTTPS.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!Cache.isUIUpdating && newValue!=oldValue) { // 当焦点离开时（newValue为false）
+                if(useHTTPS.isSelected()){
+                    Cache.currentRequest.setProtocol("https");
+                }else{
+                    Cache.currentRequest.setProtocol("http");
+                }
+                setRequestToUI(Cache.currentRequest);
+            }
+        });
     }
 
 //    @FXML
@@ -117,12 +181,36 @@ public class UIController<T> {
         return  clipboardText;
     }
 
+    @FXML
+    void clearUI() throws  Exception{
+        Cache.currentRequest = new HttpRequest();
+        setRequestToUI(Cache.currentRequest);
+    }
+
     public void setRequestToUI(HttpRequest request){
-        this.httpMethod.setValue(request.method);
-        this.urlTextField.setText(request.url);
-        ContentController.instance.setContentUIParam(request.headers.remove("Content-Type"),request.body);
-        HeaderController.instance.setHeaders(request.headers);
+        if(!HttpClient.allowMethod.contains(request.getMethod())){
+            System.out.println("[-] not allowed method: "+ request.getMethod());
+            return;
+        }else{
+            Cache.isUIUpdating = true;
+            this.httpMethod.setValue(request.getMethod());
+            this.urlTextField.setText(request.getUrl().trim());
+            if(request.getProtocol().equals("https")){
+                Cache.currentRequest.setProtocol("https");
+                useHTTPS.setSelected(true);
+            }else{
+                useHTTPS.setSelected(false);
+            }
+            if(!(request.getMethod().equals("GET") && request.getBody()==null)){
+                ContentController.instance.setContentUIParam(request.getHeaders().get("Content-Type"), request.getBody());
+//                ContentController.instance.setContentUIParam(request.getHeaders().remove("Content-Type"), request.getBody());
+            }
+            HeaderController.instance.setHeaders(request.getHeaders());
+            RawController.instance.setHttpRaw(HttpRequest.RequestToString(request));
+            Cache.isUIUpdating = false;
 //        HeaderController.instance.
+        }
+
     }
 
     @FXML
@@ -130,12 +218,26 @@ public class UIController<T> {
         String pastText = getTextFromClipboard();
         if(pastText!=null){
             System.out.println(pastText);
-            HttpRequest request = HttpClient.StringToRequest(pastText);
-            if(!HttpClient.allowMethod.contains(request.method)){
-                System.out.println("[-] not allowed method: "+request.method);
+            HttpRequest request = HttpRequest.StringToRequest(pastText);
+            Cache.currentRequest = request;
+            setRequestToUI(request);
+        }else{
+            System.out.println("[-] no any content from clipboard!");
+        }
+
+    }
+
+    @FXML
+    public  void setRequestFromCurl(){
+        String pastText = getTextFromClipboard();
+        if(pastText!=null){
+            System.out.println(pastText);
+            HttpRequest request = HttpRequest.CurlToRequest(pastText);
+            if(!HttpClient.allowMethod.contains(request.getMethod())){
+                System.out.println("[-] not allowed method: "+ request.getMethod());
                 return;
             }else{
-                setRequestToUI(request);
+//                setRequestToUI(request);
             }
         }else{
             System.out.println("[-] no any content from clipboard!");
@@ -153,10 +255,9 @@ public class UIController<T> {
             alert.showAndWait();
         }else{
             responseTextArea.setText("");
-            HttpRequest request = new HttpRequest(httpMethod.getValue().toString(),url, HeaderController.conventListToMap(HeaderController.headers),ContentController.instance.bodyContent.getText());
+//            HttpRequest request = new HttpRequest(httpMethod.getValue().toString(),url, HeaderController.conventListToMap(HeaderController.headers),ContentController.instance.bodyContent.getText());
 //            testOperation();
-            request.headers.put("Accept","*/*");
-            new AsyncAction(this,"fetch",request,responseTextArea,requestStatus).start();
+            new AsyncAction(this,"fetch",Cache.currentRequest,responseTextArea,requestStatus).start();
 //            new AsyncAction("com.newcodor.apitest.UI.UIController","fetch",request,responseTextArea,requestStatus).start();
         }
     }
@@ -166,7 +267,7 @@ public class UIController<T> {
         String status ="Done";
         try{
 //            lock.lock();
-            HttpResponse response = HttpClient.request(request.method,request.url,7,null,request.headers,request.body);
+            HttpResponse response = HttpClient.request(request.getMethod(), request.getUrlCombined(),7,null, request.getHeaders(), request.getBody());
             StringBuffer responseText = new StringBuffer();
 //            double scrollTop = targetTextArea.getScrollTop();
 //            int caretPosition =targetTextArea.caretPositionProperty().get();
@@ -203,7 +304,7 @@ public class UIController<T> {
         } catch (Exception e){
 //            requestStatus.setText(e.getMessage());
             System.out.println("error:"+e.getMessage());
-//            e.printStackTrace();
+            e.printStackTrace();
         }finally {
 //            System.out.println(status);
             if(!status.equals("Done")){
@@ -263,9 +364,10 @@ public class UIController<T> {
             window.hide();
         });
         alert.setTitle("Proxy Setting");
-        ToggleGroup proxyStatusSwitchGroups = new ToggleGroup();
+
         RadioButton enableProxy = new RadioButton("enable");
         RadioButton disableProxy = new RadioButton("disable");
+        ToggleGroup proxyStatusSwitchGroups = new ToggleGroup();
         enableProxy.setToggleGroup(proxyStatusSwitchGroups);
         disableProxy.setToggleGroup(proxyStatusSwitchGroups);
         if((Boolean) proxySetting.get("enable")){
@@ -323,10 +425,15 @@ public class UIController<T> {
 
                 Proxy proxy = new Proxy((Proxy.Type)proxyType.get(proxyTypeComboBox.getValue()),new InetSocketAddress((String) proxySetting.get("host"),Integer.parseInt((String)proxySetting.get("port"))));
                 HttpClient.globalProxy= proxy;
+                useProxy.setSelected(true);
+                useProxy.setText("Proxy on");
             }else{
                 System.out.println("[+] disable proxy");
                 proxySetting.put("enable",false);
                 HttpClient.globalProxy= Proxy.NO_PROXY;
+                useProxy.setSelected(false);
+                useProxy.setText("Proxy off");
+
             }
             window.hide();
         });

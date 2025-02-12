@@ -1,4 +1,5 @@
 package com.newcodor.apirequester.UI;
+import com.newcodor.apirequester.Utils.Cache;
 import com.newcodor.apirequester.bean.Header;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -36,7 +37,8 @@ public class HeaderController<T> {
    public void initialize() {
         this.instance = this;
        ObservableList<TableColumn> columns = headersTable.getColumns();
-       headers.add(new Header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"));
+//       headers.add(new Header("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36"));
+//       headers.add(new Header("Accept","*/*"));
        ArrayList<String> headerFields = new ArrayList(){};
        for (Field field : Header.class.getFields()) {
            headerFields.add(field.getName());
@@ -100,7 +102,7 @@ public class HeaderController<T> {
         System.out.println("old:"+oldValue+",new:"+newValue);
         String propertyName = t.getTableColumn().getText().trim();
         System.out.println(propertyName);
-            if(oldValue!=newValue){
+            if(!Cache.isUIUpdating && oldValue!=newValue){
                 if(propertyName.equals("Name") && containHeader(newValue)){
                     Alert info = new Alert(Alert.AlertType.WARNING);
                     info.setTitle("Warning");
@@ -122,6 +124,8 @@ public class HeaderController<T> {
                     //                    this.headers.set(t.getTableView().getSelectionModel().getSelectedIndex(),().setName(newValue));
 
                     System.out.println("new: "+this.headers);
+                    Cache.currentRequest.setHeaders(conventListToMap(headers));
+                    Cache.uiController.setRequestToUI(Cache.currentRequest);
                 }
             }
     }
@@ -131,6 +135,8 @@ public class HeaderController<T> {
         Header  newHeader = new Header(headerName.getText().trim(),headerValue.getText().trim());
         if(!containHeader(newHeader)){
             this.headers.add(newHeader);
+            Cache.currentRequest.setHeaders(conventListToMap(headers));
+            Cache.uiController.setRequestToUI(Cache.currentRequest);
             System.out.println(headers);
         }else{
             Alert info = new Alert(Alert.AlertType.WARNING);
@@ -145,6 +151,8 @@ public class HeaderController<T> {
         if(this.headersTable.getItems().size()>0){
             Header deleteHeader = (Header) this.headersTable.getSelectionModel().getSelectedItem();
             this.headers.remove(deleteHeader);
+            Cache.currentRequest.setHeaders(conventListToMap(headers));
+            Cache.uiController.setRequestToUI(Cache.currentRequest);
         }
     }
 
@@ -153,9 +161,9 @@ public class HeaderController<T> {
         for(Header header: headers){
             headerMap.put(header.getName(),header.getValue());
         }
-        if(null!=ContentController.instance.contentTypeList.getValue()){
-            headerMap.put("Content-Type",ContentController.instance.contentTypeList.getValue().toString().trim());
-        }
+//        if(null!=ContentController.instance.contentTypeList.getValue()){
+//            headerMap.put("Content-Type",ContentController.instance.contentTypeList.getValue().toString().trim());
+//        }
         return  headerMap;
     }
 }

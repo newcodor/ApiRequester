@@ -29,7 +29,7 @@ public class App extends Application
         Parent root = (Parent) FXMLLoader.load(this.getClass().getResource("/fxml/gui.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
-        primaryStage.setTitle("ApiRequester");
+        primaryStage.setTitle("ApiRequester 1.2");
 //        primaryStage.setUserData();
         primaryStage.show();
     }
