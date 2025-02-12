@@ -16,17 +16,17 @@ public class HttpRequest {
     private String url = "";
 
 
-    private HashMap<String,String> headers = new HashMap<String,String>(){{
-        put("User-Agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
-        put("Accept","*/*");
-        put("Accept-Encoding","gzip, deflate");
+    private HashMap<String, String> headers = new HashMap<String, String>() {{
+        put("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36");
+        put("Accept", "*/*");
+        put("Accept-Encoding", "gzip, deflate");
     }};
     private String body = "";
 
     public HttpRequest() {
     }
 
-    public HttpRequest(String method, String url, HashMap<String,String> headers, String body){
+    public HttpRequest(String method, String url, HashMap<String, String> headers, String body) {
         this.setMethod(method);
         this.setUrl(url);
         this.setHeaders(headers);
@@ -71,35 +71,36 @@ public class HttpRequest {
         this.url = this.getUrlCombined();
     }
 
-    public  String  getBody(){
+    public String getBody() {
         return this.body;
     }
 
-    public  void setBody(String body){
+    public void setBody(String body) {
         this.body = body;
     }
 
-    public String getUrl(){
+    public String getUrl() {
         return this.url;
     }
 
-    public String getUrlCombined(){
-        return this.getProtocol() +"://"+ this.getHost() + this.getUri();
+    public String getUrlCombined() {
+        return this.getProtocol() + "://" + this.getHost() + this.getUri();
     }
 
-    public  static String getUriFromUrl(String url){
+    public static String getUriFromUrl(String url) {
         System.out.println(url);
-        return "/"+url.split("/",4)[3];
-    }
-    public  static String getHostFromUrl(String url){
-        return url.split("/",4)[2];
+        return "/" + url.split("/", 4)[3];
     }
 
-    public  static String getProtocolFromUrl(String url){
-        return url.split(":",2)[0];
+    public static String getHostFromUrl(String url) {
+        return url.split("/", 4)[2];
     }
 
-    public  void  setUrl(String url){
+    public static String getProtocolFromUrl(String url) {
+        return url.split(":", 2)[0];
+    }
+
+    public void setUrl(String url) {
         this.url = url;
         this.Host = getHostFromUrl(this.url);
         this.uri = getUriFromUrl(this.url);
@@ -107,25 +108,26 @@ public class HttpRequest {
     }
 
 
-    public  String  getMethod(){
+    public String getMethod() {
         return this.method;
     }
 
-    public  void  setMethod(String method){
+    public void setMethod(String method) {
         this.method = method;
     }
 
-    public  HashMap<String,String> getHeaders(){
+    public HashMap<String, String> getHeaders() {
         return this.headers;
     }
 
-    public  void setHeaders(HashMap<String,String> headers){
-        this.headers=headers;
+    public void setHeaders(HashMap<String, String> headers) {
+        this.headers = headers;
     }
 
-    public  void setHeadersByKV(String key, String value){
-        this.getHeaders().put(key,value);
+    public void setHeadersByKV(String key, String value) {
+        this.getHeaders().put(key, value);
     }
+
     @Override
     public String toString() {
         return "HttpRequest{" +
@@ -165,7 +167,7 @@ public class HttpRequest {
                         request.setProtocol("https");
                     }
                 } else if (headerItem[0].trim().toLowerCase().equals("accept-encoding")) {
-                    if(headerItem[1].trim().contains("gzip,")){
+                    if (headerItem[1].trim().contains("gzip,")) {
                         request.getHeaders().put(headerItem[0].trim(), "gzip, deflate");
                     }
                 }
@@ -185,7 +187,7 @@ public class HttpRequest {
         return request;
     }
 
-    public static String  RequestToString(HttpRequest request) {
+    public static String RequestToString(HttpRequest request) {
 
         StringBuilder sb = new StringBuilder();
         sb.append(request.getMethod());
@@ -194,8 +196,8 @@ public class HttpRequest {
         sb.append(" ");
         sb.append(request.getProtocolVersion());
         sb.append("\n");
-        if(request.getHeaders()!=null){
-            ((HashMap<String,String>)request.getHeaders()).entrySet().stream().forEach((header) -> {
+        if (request.getHeaders() != null) {
+            ((HashMap<String, String>) request.getHeaders()).entrySet().stream().forEach((header) -> {
                 sb.append(header.getKey());
                 sb.append(": ");
                 sb.append(header.getValue());
@@ -203,7 +205,7 @@ public class HttpRequest {
             });
         }
         sb.append("\n");
-        if(request.getBody()!=null){
+        if (request.getBody() != null) {
             sb.append(request.getBody());
         }
         return sb.toString();
@@ -211,50 +213,43 @@ public class HttpRequest {
 
     public static HttpRequest CurlToRequest(String curlCmd) {
         HttpRequest request = new HttpRequest();
-        String[] item = curlCmd.split(":\\\\");
+        String[] item = curlCmd.split("\\\\");
         Iterator items = Arrays.stream(item).iterator();
         String line = "";
         String[] headerItem;
         if (items.hasNext()) {
             headerItem = items.next().toString().split(" ");
-            if (headerItem[0].trim() == "curl") {
-                request.setUrl(headerItem[1].trim());
-                request.setHeaders(new HashMap());
+            if (headerItem[0].trim().toLowerCase().equals("curl")) {
+                request.setUrl(headerItem[1].trim().replace("'", ""));
                 while (items.hasNext()) {
                     line = items.next().toString().trim();
                     if (line.isEmpty()) {
                         break;
-                    } else {
-                        headerItem = line.split(":", 2);
-                        for (String i:headerItem
-                        ) {
-                            System.out.println(i);
-                        }
-//                        request.headers.put(headerItem[0].trim(), headerItem[1].trim());
-//                        if (headerItem[0].trim().toLowerCase().equals("host")) {
-//                            request.Host = headerItem[1].trim();
-//                            if (request.Host.endsWith(":443") || request.Host.endsWith(":8443")) {
-//                                request.protocol = "https";
+                    } else if (line.startsWith("-H ")){
+                            headerItem = line.substring(4, line.length() - 1).split(":", 2);
+//                            for (String i : headerItem
+//                            ) {
+//                                System.out.println(i);
+//
 //                            }
-//                            request.url = request.getUrl();
-//                        }
+//                            System.out.println("---------");
+                            request.headers.put(headerItem[0].trim(), headerItem[1].trim());
+                            if (headerItem[0].trim().toLowerCase().equals("host")) {
+                                request.Host = headerItem[1].trim();
+                                if (request.Host.endsWith(":443") || request.Host.endsWith(":8443")) {
+                                    request.protocol = "https";
+                                }
+                        }
+                    } else if (line.startsWith("--data-raw")) {
+                        request.setBody(line.substring(12,line.length()-1));
+                        request.setMethod("POST");
+                    } else if (line.startsWith("-X ")) {
+                        request.setMethod(line.substring(4,line.length()-1));
                     }
 
-                }
-//                StringBuilder sb = new StringBuilder();
-//                while (items.hasNext()) {
-//                    sb.append(items.next().toString().trim() + "\r\n");
-//                }
-//                request.body = sb.toString();
-//                System.out.println(request.toString());
-                //        for (String i:item
-                //             ) {
-                //            System.out.println(i);
-                //        }
-//                return request;
+                }return request;
             }
         }
-        return null;
+        return  null;
     }
-
 }

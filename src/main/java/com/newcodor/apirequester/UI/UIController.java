@@ -217,8 +217,12 @@ public class UIController<T> {
     public  void setRequestFromClipboard(){
         String pastText = getTextFromClipboard();
         if(pastText!=null){
-            System.out.println(pastText);
-            HttpRequest request = HttpRequest.StringToRequest(pastText);
+            HttpRequest request;
+            if(pastText.substring(0,4).toLowerCase().equals("curl")){
+                request = HttpRequest.CurlToRequest(pastText);
+            }else{
+                request = HttpRequest.StringToRequest(pastText);
+            }
             Cache.currentRequest = request;
             setRequestToUI(request);
         }else{
