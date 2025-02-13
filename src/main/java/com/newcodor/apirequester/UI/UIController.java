@@ -1,9 +1,6 @@
 package com.newcodor.apirequester.UI;
 
-import com.newcodor.apirequester.Utils.AsyncAction;
-import com.newcodor.apirequester.Utils.Cache;
-import com.newcodor.apirequester.Utils.HttpClient;
-import com.newcodor.apirequester.Utils.Formatter;
+import com.newcodor.apirequester.Utils.*;
 import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import javafx.application.Platform;
@@ -24,6 +21,7 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -285,7 +283,7 @@ public class UIController<T> {
                             responseText.insert(0,value + "\r\n");
 //                            targetTextArea.insertText(0, value + "\n");
                         } else {
-                            responseText.append(entry.getKey() + ":" + value + "\r\n");
+                            responseText.append(entry.getKey() + ": " + value + "\r\n");
 //                            targetTextArea.appendText(entry.getKey() + ":" + value + "\n");
                         }
                     }
@@ -301,11 +299,21 @@ public class UIController<T> {
 //                targetTextArea.setScrollTop(scrollTop);
 //                targetTextArea.positionCaret(caretPosition);
             response.setContentSize(responseText.toString().getBytes().length);
-            targetTextArea.setText(responseText.toString());
+//            response.setContentSize(100);
             Platform.runLater(()->{
-                    requestStatus.setText("Done");
-                    responseSizeAndTime.setText(response.getContentSize()+" bytes | "+ response.getResponseTime()+" millis");
-                });
+                requestStatus.setText("Done");
+                responseSizeAndTime.setText(response.getContentSize()+" bytes | "+ response.getResponseTime()+" millis");
+            });
+            targetTextArea.setText(responseText.toString());
+//            int currentPosition  = 0;
+//            int chunkSize = Math.min(responseText.toString().length(),8192); // 灵活调整
+//            List<String> chunks =StringChunkLoader.splitIntoChunks(responseText.toString(),chunkSize);
+//            for (String chunk : chunks) {
+//                    targetTextArea.appendText(chunk);
+//                System.out.println("-------------------------------");
+//                targetTextArea.insertText(currentPosition, chunk);
+//                currentPosition += (chunk.length()); // 更新插入位置
+//            }
         }catch (SocketTimeoutException | SSLException | SocketException e1  ){
 //            Cache.uiController.requestStatus.setText(e1.getMessage());
             System.out.println(e1.getMessage());

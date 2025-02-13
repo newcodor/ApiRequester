@@ -90,18 +90,11 @@ public class HttpClient {
 //        return proxyItem;
 //    }
 
-    public static String getBodyFromConn(HttpURLConnection conn, String encoding, String zipMethod) throws IOException {
+    public static String getBodyFromConn(InputStream inputStream, String encoding, String zipMethod) throws IOException {
         String body = "";
         BufferedReader bufferedReader = null;
-        InputStream inputStream = null;
         InputStreamReader in = null;
-        conn.getHeaderFields();
-        if (conn != null && conn.getContentLength() != 0) {
-            if (conn.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
-                inputStream = conn.getErrorStream();
-            } else {
-                inputStream = conn.getInputStream();
-            }
+        if (inputStream != null) {
 
             if (!zipMethod.equals("")) {
                 if(zipMethod.equals("gzip")){
@@ -115,7 +108,6 @@ public class HttpClient {
                 String line = null;
                 while ((line = bufferedReader.readLine()) != null) {
                     bodys.append(line);
-                    bodys.append("\r\n");
                 }
                 body = bodys.toString();
             }
@@ -123,7 +115,6 @@ public class HttpClient {
         }
         return body;
     }
-
     public static HttpResponse request(String method, String url, int timeout, @Nullable Proxy proxy, @Nullable HashMap<String, String> headers, @Nullable Object body) throws Exception {
         if (!allowMethod.contains(method)) {
             throw new Exception("UnSupported HTTP Method: " + method);
@@ -184,19 +175,25 @@ public class HttpClient {
         } else if (responseHeaders.containsKey("content-encoding")) {
             zipMehtod = responseHeaders.get("content-encoding").get(0).trim();
         }
-        response = new HttpResponse(conn.getResponseCode(), getBodyFromConn(conn, charset, zipMehtod), responseHeaders);
+        InputStream inputStream = null;
+        if (conn.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
+            inputStream = conn.getErrorStream();
+        } else {
+            inputStream = conn.getInputStream();
+        }
+        String responseBody = "";
+//        if(conn.getContentLength()>0){
+//            responseBody = getBodyFromConn(inputStream, charset, zipMehtod);
+//        }
+        responseBody = getBodyFromConn(inputStream, charset, zipMehtod);
+        response = new HttpResponse(conn.getResponseCode(),responseBody , responseHeaders);
         long endTime = System.currentTimeMillis();
         if(headers.containsKey("Connection") && headers.get("Connection").equals("close")){
 //            System.out.println("close socket");
             conn.disconnect();
         }else{
 //            System.out.println("keep alive");
-            if(conn.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST){
-                conn.getErrorStream().close();
-            }else{
-                conn.getInputStream().close();
-            }
-
+            inputStream.close();
         }
         long timeSpent = endTime - startTime;
         response.setResponseTime(timeSpent);
