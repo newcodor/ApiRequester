@@ -95,8 +95,9 @@ public class HttpClient {
         BufferedReader bufferedReader = null;
         InputStream inputStream = null;
         InputStreamReader in = null;
+        conn.getHeaderFields();
         if (conn != null && conn.getContentLength() != 0) {
-            if (conn.getResponseCode() >= 400) {
+            if (conn.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST) {
                 inputStream = conn.getErrorStream();
             } else {
                 inputStream = conn.getInputStream();
@@ -141,6 +142,7 @@ public class HttpClient {
         conn.setRequestMethod(method);
         conn.setConnectTimeout(timeout * 1000);
         conn.setReadTimeout(timeout * 1000);
+        conn.setInstanceFollowRedirects(false);
         conn.setDoOutput(true);
         if (null != headers) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
@@ -189,7 +191,12 @@ public class HttpClient {
             conn.disconnect();
         }else{
 //            System.out.println("keep alive");
-            conn.getInputStream().close();
+            if(conn.getResponseCode() >= HttpURLConnection.HTTP_BAD_REQUEST){
+                conn.getErrorStream().close();
+            }else{
+                conn.getInputStream().close();
+            }
+
         }
         long timeSpent = endTime - startTime;
         response.setResponseTime(timeSpent);
