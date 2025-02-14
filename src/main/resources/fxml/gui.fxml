@@ -28,7 +28,7 @@
         </TextField>
         <SplitPane dividerPositions="0.529989094874591">
             <items>
-                <FlowPane prefWidth="400.0">
+                <FlowPane prefWidth="300.0">
                     <children>
                         <ComboBox fx:id="httpMethod" onDragEntered="#addAllowMethod" onZoomStarted="#addAllowMethod" prefHeight="23.0" prefWidth="104.0" promptText="GET" />
                         <Button id="fetchBtn" fx:id="fetchReponseBtn" mnemonicParsing="false" onAction="#handleFetchTask" text="Submit">
@@ -84,7 +84,7 @@
                         <Insets left="5.0" top="5.0" />
                     </padding>
                 </FlowPane>
-                <FlowPane>
+                <FlowPane prefHeight="428.0" prefWidth="279.0">
                     <children>
                         <CheckBox fx:id="useHTTPS" mnemonicParsing="false" text="Use HTTPS">
                             <FlowPane.margin>
@@ -96,7 +96,7 @@
                                 <Insets right="5.0" />
                             </FlowPane.margin></CheckBox>
                         <RadioButton fx:id="useProxy" mnemonicParsing="false" onAction="#setProxyStatus" text="Proxy off" />
-                        <TextArea fx:id="responseTextArea" editable="false" minWidth="50.0" prefHeight="400.0" prefWidth="418.0" style="-fx-background-color: #1d1626; -fx-wrap-text: true;-fx-font-family: KaiTi">
+                        <TextArea fx:id="responseTextArea" editable="false" minWidth="50.0" prefHeight="400.0" prefWidth="507.0" style="-fx-background-color: #1d1626; -fx-wrap-text: true;-fx-font-family: KaiTi">
                             <FlowPane.margin>
                                 <Insets top="3.0" />
                             </FlowPane.margin>
