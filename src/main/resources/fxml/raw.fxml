@@ -9,7 +9,7 @@
    <children>
       <Pane>
          <children>
-            <TextArea fx:id="rawContent" prefHeight="380.0" prefWidth="400.0" style="-fx-wrap-text: true;">
+            <TextArea fx:id="rawContent" prefHeight="380.0" prefWidth="400.0" style="-fx-wrap-text: true;-fx-font-family: KaiTi">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>

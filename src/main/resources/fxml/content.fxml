@@ -60,7 +60,7 @@
                      <Insets />
                   </VBox.margin>
                </Pane>
-               <TextArea fx:id="bodyContent" maxHeight="600.0" maxWidth="500.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="237.0" prefWidth="350.0" style="-fx-wrap-text: true;">
+               <TextArea fx:id="bodyContent" maxHeight="600.0" maxWidth="500.0" minHeight="-Infinity" minWidth="-Infinity" prefHeight="237.0" prefWidth="350.0" style="-fx-wrap-text: true;-fx-font-family: KaiTi">
                   <VBox.margin>
                      <Insets bottom="5.0" top="5.0" />
                   </VBox.margin>
