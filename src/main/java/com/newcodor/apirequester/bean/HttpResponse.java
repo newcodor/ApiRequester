@@ -5,16 +5,16 @@ import java.util.Map;
 
 public class HttpResponse {
     public int staticCode;
-    public String responseText;
+    private String responseBody;
 
     private long responseTime;
 
     private int contentSize;
 
     public Map<String, List<String>> headers;
-    public HttpResponse(int staticCode,String responseText,Map headers){
+    public HttpResponse(int staticCode,String responseBody,Map headers){
         this.staticCode =staticCode;
-        this.responseText = responseText;
+        this.setResponseBody(responseBody);
         this.headers =headers;
     }
 
@@ -32,5 +32,13 @@ public class HttpResponse {
 
     public void setContentSize(int contentSize) {
         this.contentSize = contentSize;
+    }
+
+    public String getResponseBody() {
+        return responseBody;
+    }
+
+    public void setResponseBody(String responseBody) {
+        this.responseBody = responseBody;
     }
 }

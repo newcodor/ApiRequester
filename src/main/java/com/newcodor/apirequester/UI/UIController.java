@@ -1,6 +1,7 @@
 package com.newcodor.apirequester.UI;
 
 import com.newcodor.apirequester.Utils.*;
+import com.newcodor.apirequester.Utils.Formatter;
 import com.newcodor.apirequester.bean.HttpRequest;
 import com.newcodor.apirequester.bean.HttpResponse;
 import javafx.application.Platform;
@@ -10,9 +11,12 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import javafx.scene.input.Clipboard;
@@ -21,11 +25,7 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -37,6 +37,9 @@ public class UIController<T> {
     private TextField urlTextField;
     @FXML
     private TextArea responseTextArea;
+
+    @FXML
+    private Text responseUIText;
 
     @FXML
     private ComboBox httpMethod;
@@ -160,6 +163,8 @@ public class UIController<T> {
                 setRequestToUI(Cache.currentRequest);
             }
         });
+        responseTextArea.setEditable(false);
+
     }
 
 //    @FXML
@@ -186,6 +191,11 @@ public class UIController<T> {
         Cache.currentRequest = new HttpRequest();
         setRequestToUI(Cache.currentRequest);
         responseSizeAndTime.setText("");
+//        String initStr = "0123456数据但是也能sdsd1111";
+//        responseUIText.setText("");
+        responseTextArea.setText("");
+//        responseUIText.getChildren().clear();
+//        responseUIText.cle
     }
 
     public void setRequestToUI(HttpRequest request){
@@ -259,7 +269,9 @@ public class UIController<T> {
             alert.setContentText("url can't be empty!");
             alert.showAndWait();
         }else{
+//            responseUIText.setText("");
             responseTextArea.setText("");
+//            responseUIText.getChildren().clear();
 //            HttpRequest request = new HttpRequest(httpMethod.getValue().toString(),url, HeaderController.conventListToMap(HeaderController.headers),ContentController.instance.bodyContent.getText());
 //            testOperation();
             new AsyncAction(this,"fetch",Cache.currentRequest,responseTextArea,requestStatus).start();
@@ -291,29 +303,44 @@ public class UIController<T> {
             responseText.append("\r\n");
 //                targetTextArea.appendText("\n");
             if(this.isJsonPretty.isSelected() && response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
-                responseText.append(Formatter.prettyJson(response.responseText));
+                responseText.append(Formatter.prettyJson(response.getResponseBody()));
             }else{
-                responseText.append(response.responseText);
+                responseText.append(response.getResponseBody());
             }
-//                targetTextArea.appendText(response.responseText);
-//                targetTextArea.setScrollTop(scrollTop);
-//                targetTextArea.positionCaret(caretPosition);
             response.setContentSize(responseText.toString().getBytes().length);
 //            response.setContentSize(100);
+            System.out.println("responseText length:"+responseText.length());
             Platform.runLater(()->{
                 requestStatus.setText("Done");
                 responseSizeAndTime.setText(response.getContentSize()+" bytes | "+ response.getResponseTime()+" millis");
+                targetTextArea.setText(responseText.toString());
+//                ChunkedTextLoader loader = new ChunkedTextLoader(targetTextArea);
+//                loader.loadLargeText(responseText.toString(),5000);
+//                targetTextArea.getChildren().add(new Text(responseText.toString()));
+//                targetTextArea.getGraphicsContext2D().fillText(responseText.toString(),10,10);
+
+
             });
-            targetTextArea.setText(responseText.toString());
-//            int currentPosition  = 0;
-//            int chunkSize = Math.min(responseText.toString().length(),8192); // 灵活调整
-//            List<String> chunks =StringChunkLoader.splitIntoChunks(responseText.toString(),chunkSize);
-//            for (String chunk : chunks) {
-//                    targetTextArea.appendText(chunk);
-//                System.out.println("-------------------------------");
-//                targetTextArea.insertText(currentPosition, chunk);
-//                currentPosition += (chunk.length()); // 更新插入位置
-//            }
+
+            try{
+/*
+                int chunkSize = Math.min(responseText.toString().length(),10000); // 灵活调整
+                Iterator<String> chunksIterator = StringChunkLoader.splitChunkIterator(responseText.toString(), chunkSize);
+                final Runnable appendTextRunnable =
+                        () -> {
+                            for (Iterator<String> it = chunksIterator; it.hasNext(); ) {
+                                String chunk = it.next();
+                                targetTextArea.appendText(chunk);
+                            }
+                            targetTextArea.positionCaret(0);  //回到起点
+
+                        };
+                Platform.runLater(appendTextRunnable);
+                */
+
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
         }catch (SocketTimeoutException | SSLException | SocketException e1  ){
 //            Cache.uiController.requestStatus.setText(e1.getMessage());
             System.out.println(e1.getMessage());
