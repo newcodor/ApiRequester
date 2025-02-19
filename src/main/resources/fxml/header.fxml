@@ -42,10 +42,10 @@
         <Separator prefWidth="250.0" />
         <FlowPane prefHeight="576.0" prefWidth="410.0">
             <children>
-                <TableView fx:id="headersTable" editable="true" prefHeight="306.0" prefWidth="330.0">
+                <TableView fx:id="headersTable" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="356.0" prefWidth="400.0">
                     <columns>
-                        <TableColumn id="Name" prefWidth="149.0" sortable="false" text="Name" />
-                        <TableColumn id="Value" prefWidth="220.0" sortable="false" text="Value" />
+                        <TableColumn id="Name" prefWidth="120.0" sortable="false" text="Name" />
+                        <TableColumn id="Value" prefWidth="279.0" sortable="false" text="Value" />
                     </columns>
                 </TableView>
                 <Button alignment="TOP_CENTER" mnemonicParsing="false" onAction="#deleteHeaderFromTableView" prefHeight="23.0" prefWidth="60.0" text="Delete">

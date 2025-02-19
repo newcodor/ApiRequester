@@ -57,7 +57,7 @@
                                 <Insets left="5.0" />
                             </FlowPane.margin>
                         </Button>
-                        <TabPane prefHeight="400.0" prefWidth="400.0" tabClosingPolicy="UNAVAILABLE">
+                        <TabPane prefHeight="450.0" prefWidth="470.0" tabClosingPolicy="UNAVAILABLE">
                             <tabs>
                                 <Tab text="Content">
                                     <content>
@@ -96,7 +96,7 @@
                                 <Insets right="5.0" />
                             </FlowPane.margin></CheckBox>
                         <RadioButton fx:id="useProxy" mnemonicParsing="false" onAction="#setProxyStatus" text="Proxy off" />
-                        <TextArea fx:id="responseTextArea" editable="false" minWidth="50.0" prefHeight="400.0" prefWidth="507.0" style="-fx-background-color: #1d1626; -fx-wrap-text: true;-fx-font-family: KaiTi">
+                        <TextArea fx:id="responseTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="50.0" prefHeight="450.0" prefWidth="487.0" style="-fx-background-color: #1d1626; -fx-wrap-text: true; -fx-font-family: KaiTi; -fx-font-size: 14px;">
                             <FlowPane.margin>
                                 <Insets top="3.0" />
                             </FlowPane.margin>

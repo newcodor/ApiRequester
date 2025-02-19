@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -9,7 +10,7 @@
    <children>
       <Pane>
          <children>
-            <TextArea fx:id="rawContent" prefHeight="380.0" prefWidth="400.0" style="-fx-wrap-text: true;-fx-font-family: KaiTi">
+            <TextArea fx:id="rawContent" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="410.0" prefWidth="470.0" style="-fx-wrap-text: true; -fx-font-family: KaiTi; -fx-font-size: 14px;">
                <opaqueInsets>
                   <Insets />
                </opaqueInsets>
