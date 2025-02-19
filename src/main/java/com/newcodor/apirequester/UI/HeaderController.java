@@ -144,6 +144,8 @@ public class HeaderController<T> {
             info.setContentText(headerName.getText().trim()+" is exit");
             info.showAndWait();
         }
+        headerName.clear();
+        headerValue.clear();
     }
 
     @FXML
