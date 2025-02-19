@@ -160,6 +160,9 @@ public class HttpRequest {
                 break;
             } else {
                 headerItem = line.split(":", 2);
+                if(headerItem[0].trim().startsWith("sec-ch-") ||  headerItem[0].trim().startsWith("Sec-Fetch")){
+                    continue;
+                }
                 request.getHeaders().put(headerItem[0].trim(), headerItem[1].trim());
                 if (headerItem[0].trim().toLowerCase().equals("host")) {
                     request.setHost(headerItem[1].trim());
@@ -233,6 +236,9 @@ public class HttpRequest {
 //
 //                            }
 //                            System.out.println("---------");
+                            if(headerItem[0].trim().startsWith("sec-ch-") ||  headerItem[0].trim().startsWith("Sec-Fetch")){
+                                continue;
+                        }
                             request.headers.put(headerItem[0].trim(), headerItem[1].trim());
                             if (headerItem[0].trim().toLowerCase().equals("host")) {
                                 request.Host = headerItem[1].trim();
@@ -247,7 +253,11 @@ public class HttpRequest {
                         request.setMethod(line.substring(4,line.length()-1));
                     }
 
-                }return request;
+                }
+                if(!request.getHeaders().containsKey("Host")){
+                    request.setHeadersByKV("Host",request.getHost());
+                }
+                return request;
             }
         }
         return  null;
