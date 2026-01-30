@@ -302,7 +302,7 @@ public class UIController<T> {
                 }
             responseText.append("\r\n");
 //                targetTextArea.appendText("\n");
-            if(this.isJsonPretty.isSelected() && response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json")){
+            if(this.isJsonPretty.isSelected() && response.headers.containsKey("Content-Type") && response.headers.get("Content-Type").get(0).contains("application/json") && response.staticCode!=204){
                 responseText.append(Formatter.prettyJson(response.getResponseBody()));
             }else{
                 responseText.append(response.getResponseBody());
