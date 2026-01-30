@@ -250,18 +250,9 @@ public class HttpRequest {
                     } else if (line.startsWith("-b")) {
                         request.headers.put("Cookie", line.substring(4, line.length() - 3).trim());
                     } else if (line.startsWith("--data-raw")) {
-//                        if(line.charAt(11) == '$'){
-//                            System.out.println("find multi file form!");
-//                            while (items.hasNext()) {
-//                                line = items.next().toString().trim();
-//                                System.out.println(line);
-//                            }
-//                        }
                         if(line.charAt(11) == '$'){
-                            System.out.println("find multipart form data!");
                             request.setBody(line.substring(13,line.length()-1).replaceAll("\\\\r?\\\\n","\r\n"));
                         }else{
-                            System.out.println(line.substring(12,line.length()-3));
                             request.setBody(line.substring(12,line.length()-3));
                         }
                         if(request.getMethod().equals("GET")){
