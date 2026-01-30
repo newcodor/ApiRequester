@@ -137,7 +137,7 @@ public class HttpClient {
         conn.setDoOutput(true);
         if (null != headers) {
             for (Map.Entry<String, String> entry : headers.entrySet()) {
-                if (entry.getKey().equals("Content-Type") && !conn.getRequestMethod().equals("POST")) {
+                if (entry.getKey().equals("Content-Type") && !conn.getRequestMethod().equals("POST") && !conn.getRequestMethod().equals("PUT")) {
                     continue;
                 }
                 conn.setRequestProperty(entry.getKey(), entry.getValue());
