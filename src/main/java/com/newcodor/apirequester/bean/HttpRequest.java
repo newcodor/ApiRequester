@@ -216,7 +216,8 @@ public class HttpRequest {
 
     public static HttpRequest CurlToRequest(String curlCmd) {
         HttpRequest request = new HttpRequest();
-        String[] item = curlCmd.split("\\\\");
+//        String[] item = curlCmd.split("\\\\");
+        String[] item = curlCmd.split("\\r?\\n");
         Iterator items = Arrays.stream(item).iterator();
         String line = "";
         String[] headerItem;
@@ -229,7 +230,7 @@ public class HttpRequest {
                     if (line.isEmpty()) {
                         break;
                     } else if (line.startsWith("-H ")){
-                            headerItem = line.substring(4, line.length() - 1).split(":", 2);
+                            headerItem = line.substring(4, line.length() - 3).split(":", 2);
 //                            for (String i : headerItem
 //                            ) {
 //                                System.out.println(i);
@@ -246,11 +247,28 @@ public class HttpRequest {
                                     request.protocol = "https";
                                 }
                         }
+                    } else if (line.startsWith("-b")) {
+                        request.headers.put("Cookie", line.substring(4, line.length() - 3).trim());
                     } else if (line.startsWith("--data-raw")) {
-                        request.setBody(line.substring(12,line.length()-1));
-                        request.setMethod("POST");
+//                        if(line.charAt(11) == '$'){
+//                            System.out.println("find multi file form!");
+//                            while (items.hasNext()) {
+//                                line = items.next().toString().trim();
+//                                System.out.println(line);
+//                            }
+//                        }
+                        if(line.charAt(11) == '$'){
+                            System.out.println("find multipart form data!");
+                            request.setBody(line.substring(13,line.length()-1).replaceAll("\\\\r?\\\\n","\r\n"));
+                        }else{
+                            System.out.println(line.substring(12,line.length()-3));
+                            request.setBody(line.substring(12,line.length()-3));
+                        }
+                        if(request.getMethod().equals("GET")){
+                            request.setMethod("POST");
+                        }
                     } else if (line.startsWith("-X ")) {
-                        request.setMethod(line.substring(4,line.length()-1));
+                        request.setMethod(line.substring(4,line.length()-3));
                     }
 
                 }
