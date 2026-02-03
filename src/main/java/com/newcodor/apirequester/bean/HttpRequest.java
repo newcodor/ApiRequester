@@ -225,44 +225,58 @@ public class HttpRequest {
             headerItem = items.next().toString().split(" ");
             if (headerItem[0].trim().toLowerCase().equals("curl")) {
                 request.setUrl(headerItem[1].trim().replace("'", ""));
+                int lastSubLength=3;
                 while (items.hasNext()) {
                     line = items.next().toString().trim();
+
+                    if(!items.hasNext()){
+                        lastSubLength=1;
+                    }
                     if (line.isEmpty()) {
                         break;
                     } else if (line.startsWith("-H ")){
-                            headerItem = line.substring(4, line.length() - 3).split(":", 2);
+                        if (line.contains(":")){
+                            headerItem = line.substring(4, line.length() - lastSubLength).split(":", 2);
+                            if(headerItem[0].trim().startsWith("sec-ch-") ||  headerItem[0].trim().startsWith("Sec-Fetch")) {
+                                continue;
+                            }
+                                request.headers.put(headerItem[0].trim(), headerItem[1].trim());
+                                if (headerItem[0].trim().toLowerCase().equals("host")) {
+                                    request.Host = headerItem[1].trim();
+                                    if (request.Host.endsWith(":443") || request.Host.endsWith(":8443")) {
+                                        request.protocol = "https";
+                                    }
+                                }
+                        }else{
+                            request.headers.put(line.substring(4, line.length() - lastSubLength-1).trim(), "");
+                                }
+
 //                            for (String i : headerItem
 //                            ) {
 //                                System.out.println(i);
 //
 //                            }
 //                            System.out.println("---------");
-                            if(headerItem[0].trim().startsWith("sec-ch-") ||  headerItem[0].trim().startsWith("Sec-Fetch")){
-                                continue;
-                        }
-                            request.headers.put(headerItem[0].trim(), headerItem[1].trim());
-                            if (headerItem[0].trim().toLowerCase().equals("host")) {
-                                request.Host = headerItem[1].trim();
-                                if (request.Host.endsWith(":443") || request.Host.endsWith(":8443")) {
-                                    request.protocol = "https";
-                                }
-                        }
+
+
+
                     } else if (line.startsWith("-b")) {
-                        request.headers.put("Cookie", line.substring(4, line.length() - 3).trim());
+                        request.headers.put("Cookie", line.substring(4, line.length() - lastSubLength).trim());
                     } else if (line.startsWith("--data-raw")) {
                         System.out.println();
+                        if(items.hasNext()){
+
+                        }
                         if(line.charAt(11) == '$'){
-                            request.setBody(line.substring(13,line.length()-1).replaceAll("\\\\r?\\\\n","\r\n"));
-                        } else if (line.endsWith("\\")) {
-                            request.setBody(line.substring(12,line.length()-3));
+                            request.setBody(line.substring(13,line.length()-lastSubLength).replaceAll("\\\\r?\\\\n","\r\n"));
                         } else{
-                            request.setBody(line.substring(12,line.length()-1));
+                            request.setBody(line.substring(12,line.length()-lastSubLength));
                         }
                         if(request.getMethod().equals("GET")){
                             request.setMethod("POST");
                         }
                     } else if (line.startsWith("-X ")) {
-                        request.setMethod(line.substring(4,line.length()-3));
+                        request.setMethod(line.substring(4,line.length()-lastSubLength));
                     }
 
                 }
