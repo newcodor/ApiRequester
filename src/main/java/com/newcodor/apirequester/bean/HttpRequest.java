@@ -250,10 +250,13 @@ public class HttpRequest {
                     } else if (line.startsWith("-b")) {
                         request.headers.put("Cookie", line.substring(4, line.length() - 3).trim());
                     } else if (line.startsWith("--data-raw")) {
+                        System.out.println();
                         if(line.charAt(11) == '$'){
                             request.setBody(line.substring(13,line.length()-1).replaceAll("\\\\r?\\\\n","\r\n"));
-                        }else{
+                        } else if (line.endsWith("\\")) {
                             request.setBody(line.substring(12,line.length()-3));
+                        } else{
+                            request.setBody(line.substring(12,line.length()-1));
                         }
                         if(request.getMethod().equals("GET")){
                             request.setMethod("POST");
